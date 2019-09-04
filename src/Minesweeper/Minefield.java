@@ -14,11 +14,13 @@ public class Minefield {
     
     private GameDifficulty gameDifficulty;
     
-    private int[][] tiles;
+    private Tile[][] tiles;
+    
+    private boolean isAGameRunning = false;
     
     private Minefield() {
         this.gameDifficulty = GameDifficulty.BEGINNER;
-        this.tiles = new int[this.gameDifficulty.width()][this.gameDifficulty.height()];
+        this.tiles = new Tile[this.gameDifficulty.width()][this.gameDifficulty.height()];
     }
     
     /**
@@ -39,7 +41,7 @@ public class Minefield {
      */
     public void setGameDifficulty(GameDifficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
-        this.tiles = new int[this.gameDifficulty.width()][this.gameDifficulty.height()];
+        this.tiles = new Tile[this.gameDifficulty.width()][this.gameDifficulty.height()];
     }
     
     /**
@@ -75,5 +77,47 @@ public class Minefield {
     
     public int getMinefieldTileCount() {
         return tiles.length * tiles[1].length;
+    }
+    
+    public void startAGame() {
+        this.isAGameRunning = true;
+        generateMinefieldWithTiles();
+    }
+    
+    public boolean isAGameRunning() {
+        return this.isAGameRunning;
+    }
+    
+    public boolean isMinefieldGeneratedCorrectForSelectedDifficulty() {
+        return this.checkMinefieldForIntegrity();
+    }
+    
+    public Tile getTile(int tilePositionX, int tilePositionY) {
+        return this.tiles[tilePositionX][tilePositionY];
+    }
+    
+    public void selectTile(Tile tile) {
+        tile.selectTile();
+    }
+    
+    private boolean checkMinefieldForIntegrity() {
+        int tileCount = 0;
+        for (int minefieldPositionX = 0; minefieldPositionX < minefield.getMinefieldWidth(); minefieldPositionX++) {
+            for (int minefieldPositionY = 0; minefieldPositionY < minefield.getMinefieldHeight(); minefieldPositionY++) {
+                if (this.tiles[minefieldPositionX][minefieldPositionY] == null) {
+                    return false;
+                }
+                tileCount++;
+            }
+        }
+        return tileCount == minefield.getMinefieldWidth() * minefield.getMinefieldHeight();
+    }
+    
+    private void generateMinefieldWithTiles() {
+        for (int minefieldPositionX = 0; minefieldPositionX < minefield.getMinefieldWidth(); minefieldPositionX++) {
+            for (int minefieldPositionY = 0; minefieldPositionY < minefield.getMinefieldHeight(); minefieldPositionY++) {
+                this.tiles[minefieldPositionX][minefieldPositionY] = new Tile();
+            }
+        }
     }
 }
