@@ -6,26 +6,28 @@
 package Minesweeper;
 
 /**
- *
+ * Class responsible for storing and retrieving tiles that it contains. 
  * @author brendon
  */
 public class Minefield {
-    private static Minefield minefield;
-    
-    private GameDifficulty gameDifficulty;
-    
-    private Tile[][] tiles;
-    
-    private boolean isAGameRunning = false;
-    
-    private Minefield() {
-        this.gameDifficulty = GameDifficulty.BEGINNER;
-        this.tiles = new Tile[this.gameDifficulty.width()][this.gameDifficulty.height()];
-    }
+    /**
+     * Singleton instance of the class.
+     */
+    private static Minefield minefield = null;
     
     /**
-     * Asks the class to return it's singleton instance if one exists.
-     * Creates one otherwise
+     * Multi-dimensional array that stores the tiles.
+     */
+    private Tile[][] tiles = new Tile[0][0];
+    
+    /**
+     * Default private constructor.
+     */
+    private Minefield() {}
+    
+    /**
+     * Asks the class to return it's singleton instance. 
+     * Creates an instance if it's the first run.
      * @return A singleton instance of the Minefield class.
      */
     public static Minefield getInstance() {
@@ -36,88 +38,39 @@ public class Minefield {
     }
     
     /**
-     * Sets the current game difficulty to the selection made by the user.
-     * @param gameDifficulty - The difficulty to set.
+     * Sets the size of the minefield to be played.
+     * @param tilesWidth - The tile width of the field.
+     * @param tilesHeight - The tile height of the field.
      */
-    public void setGameDifficulty(GameDifficulty gameDifficulty) {
-        this.gameDifficulty = gameDifficulty;
-        this.tiles = new Tile[this.gameDifficulty.width()][this.gameDifficulty.height()];
+    public void setTilesSize(int tilesWidth, int tilesHeight) {
+        tiles = new Tile[tilesWidth][tilesHeight];
+    }
+    
+    public int instantiateMinefieldWithTiles() {
+        return this.generateMinefieldWithTiles();
     }
     
     /**
-     * Ask the minefield for its current game difficulty setting.
-     * @return The current game difficulty setting.
+     * Gets a tile from the minefield given its x and y position.
+     * @param tilePositionX - The position of the tile along the x axis.
+     * @param tilePositionY - The position of the tile along the y axis.
+     * @return The tile at the given position.
      */
-    public GameDifficulty getCurrentGameDifficulty() {
-        return this.gameDifficulty;
-    }
-    /**
-     * Gets the number of mines that the minefield contains.
-     * @return The number of mines.
-     */
-    public int getMinefieldMineCount() {
-        return this.gameDifficulty.mineCount();
+    public Tile getTileFromMinefield(int tilePositionX, int tilePositionY) {
+        return tiles[tilePositionX][tilePositionY];
     }
     
     /**
-     * Gets how many tiles wide the minefield currently is.
-     * @return The width of the minefield.
+     * Generates the minefield with tiles based on the set difficulty.
      */
-    public int getMinefieldWidth() {
-        return this.gameDifficulty.width();
-    }
-    
-    /**
-     * Gets how many tiles high the minefield currently is.
-     * @return The height of the minefield.
-     */
-    public int getMinefieldHeight() {
-        return this.gameDifficulty.height();
-    }        
-    
-    public int getMinefieldTileCount() {
-        return tiles.length * tiles[1].length;
-    }
-    
-    public void startAGame() {
-        this.isAGameRunning = true;
-        generateMinefieldWithTiles();
-    }
-    
-    public boolean isAGameRunning() {
-        return this.isAGameRunning;
-    }
-    
-    public boolean isMinefieldGeneratedCorrectForSelectedDifficulty() {
-        return this.checkMinefieldForIntegrity();
-    }
-    
-    public Tile getTile(int tilePositionX, int tilePositionY) {
-        return this.tiles[tilePositionX][tilePositionY];
-    }
-    
-    public void selectTile(Tile tile) {
-        tile.selectTile();
-    }
-    
-    private boolean checkMinefieldForIntegrity() {
+    private int generateMinefieldWithTiles() {
         int tileCount = 0;
-        for (int minefieldPositionX = 0; minefieldPositionX < minefield.getMinefieldWidth(); minefieldPositionX++) {
-            for (int minefieldPositionY = 0; minefieldPositionY < minefield.getMinefieldHeight(); minefieldPositionY++) {
-                if (this.tiles[minefieldPositionX][minefieldPositionY] == null) {
-                    return false;
-                }
+        for (Tile[] tile : tiles) {
+            for (Tile t : tile) {
+                t = new Tile();
                 tileCount++;
             }
         }
-        return tileCount == minefield.getMinefieldWidth() * minefield.getMinefieldHeight();
-    }
-    
-    private void generateMinefieldWithTiles() {
-        for (int minefieldPositionX = 0; minefieldPositionX < minefield.getMinefieldWidth(); minefieldPositionX++) {
-            for (int minefieldPositionY = 0; minefieldPositionY < minefield.getMinefieldHeight(); minefieldPositionY++) {
-                this.tiles[minefieldPositionX][minefieldPositionY] = new Tile();
-            }
-        }
+        return tileCount;
     }
 }

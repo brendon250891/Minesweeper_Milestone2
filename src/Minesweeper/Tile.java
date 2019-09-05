@@ -18,11 +18,28 @@ public class Tile {
         this.tileLabel = "";
     }
     
-    public String getTileLabel() {
+    /**
+     * Sets the tile to selected and returns the tiles label.
+     * @return The tiles label
+     */
+    public String selectTile() {
+        this.isTileInPlay = false;
         return this.tileLabel;
     }
     
-    public void selectTile() {
+    /**
+     * Sets the tile to be a mine.
+     */
+    public void setMineTile() {
+        this.tileLabel = "M";
+    }
+    
+    public void setTileAsFlagged() {
+        this.tileLabel = "F";
         this.isTileInPlay = false;
+    }
+    
+    public boolean isTileAvailableForSelection() {
+        return this.isTileInPlay;
     }
 }
