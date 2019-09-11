@@ -5,17 +5,32 @@
  */
 package Minesweeper;
 
+import java.awt.Point;
+
 /**
  *
  * @author brendon
  */
 public class Tile {
-    private String tileLabel;
+    private String tileLabel = "";
+    
+    private int tilePositionX;
+    
+    private int tilePositionY;
     
     private boolean isTileInPlay = true;
     
-    public Tile() {
-        this.tileLabel = "";
+    public Tile(int tilePositionX, int tilePositionY) {
+        this.tilePositionX = tilePositionX;
+        this.tilePositionY = tilePositionY;
+    }
+   
+    public int getTilePositionX() {
+        return tilePositionX;
+    }
+    
+    public int getTilePositionY() {
+        return tilePositionY;
     }
     
     /**
@@ -23,23 +38,27 @@ public class Tile {
      * @return The tiles label
      */
     public String selectTile() {
-        this.isTileInPlay = false;
-        return this.tileLabel;
+        isTileInPlay = false;
+        return tileLabel;
     }
     
     /**
      * Sets the tile to be a mine.
      */
     public void setMineTile() {
-        this.tileLabel = "M";
+        tileLabel = "M";
+    }
+    
+    public boolean isMineTile() {
+        return tileLabel.equalsIgnoreCase("m");
     }
     
     public void setTileAsFlagged() {
-        this.tileLabel = "F";
-        this.isTileInPlay = false;
+        tileLabel = "F";
+        isTileInPlay = false;
     }
     
     public boolean isTileAvailableForSelection() {
-        return this.isTileInPlay;
+        return isTileInPlay;
     }
 }

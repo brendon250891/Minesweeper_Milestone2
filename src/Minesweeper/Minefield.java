@@ -5,72 +5,85 @@
  */
 package Minesweeper;
 
+import java.util.Random;
+
 /**
- * Class responsible for storing and retrieving tiles that it contains. 
+ * Class responsible for storing and retrieving tiles for a game of minesweeper.
+ *
  * @author brendon
  */
 public class Minefield {
-    /**
-     * Singleton instance of the class.
-     */
-    private static Minefield minefield = null;
-    
+
     /**
      * Multi-dimensional array that stores the tiles.
      */
     private Tile[][] tiles = new Tile[0][0];
     
+    private int mineCount = 0;
+
     /**
-     * Default private constructor.
+     * Default constructor.
+     *
+     * @param gameDifficulty - The difficulty of
      */
-    private Minefield() {}
+    public Minefield(GameDifficulty gameDifficulty) {
+        tiles = new Tile[gameDifficulty.width()][gameDifficulty.height()];
+        mineCount = gameDifficulty.mineCount();
+    }
     
     /**
-     * Asks the class to return it's singleton instance. 
-     * Creates an instance if it's the first run.
-     * @return A singleton instance of the Minefield class.
+     * Get the size of the minefield
+     * @return - The number of tiles in the minefield
      */
-    public static Minefield getInstance() {
-        if (minefield == null) {
-            minefield = new Minefield();
+    public int getMinefieldSize() {
+        return tiles.length * tiles[1].length;
+    }
+
+    /**
+     * Instantiate the minefield tiles
+     */
+    public void generateMinefield() {
+        for (int tilePositionX = 0; tilePositionX < tiles.length; tilePositionX++) {
+            for (int tilePositionY = 0; tilePositionY < tiles[1].length; tilePositionY++) {
+                tiles[tilePositionX][tilePositionY] = new Tile(tilePositionX, tilePositionY);
+            }
         }
-        return minefield;
+        selectMineTiles();
     }
     
     /**
-     * Sets the size of the minefield to be played.
-     * @param tilesWidth - The tile width of the field.
-     * @param tilesHeight - The tile height of the field.
+     * Randomly allocates mine tiles to the minefield.
      */
-    public void setTilesSize(int tilesWidth, int tilesHeight) {
-        tiles = new Tile[tilesWidth][tilesHeight];
+    private void selectMineTiles() {
+        Random random = new Random();
+        int mineTilesSet = 0;
+        while (mineTilesSet < mineCount) {
+            var tile = getTileFromMinefield(random.nextInt(tiles.length - 1), random.nextInt(tiles[1].length - 1));
+            if (!tile.isMineTile()) {
+                tile.setMineTile();
+                mineTilesSet++;
+            }
+        }
     }
-    
-    public int instantiateMinefieldWithTiles() {
-        return this.generateMinefieldWithTiles();
-    }
-    
+
     /**
-     * Gets a tile from the minefield given its x and y position.
+     * Get a tile from the minefield given its x and y position.
+     *
      * @param tilePositionX - The position of the tile along the x axis.
      * @param tilePositionY - The position of the tile along the y axis.
      * @return The tile at the given position.
      */
-    public Tile getTileFromMinefield(int tilePositionX, int tilePositionY) {
-        return tiles[tilePositionX][tilePositionY];
-    }
-    
-    /**
-     * Generates the minefield with tiles based on the set difficulty.
-     */
-    private int generateMinefieldWithTiles() {
-        int tileCount = 0;
-        for (Tile[] tile : tiles) {
-            for (Tile t : tile) {
-                t = new Tile();
-                tileCount++;
-            }
+    public Tile getTileFromMinefield(int tilePositionX, int tilePositionY) throws IndexOutOfBoundsException {
+        System.out.println(String.format("x: %s, y: %s", tiles.length, tiles[1].length));
+        if ((tilePositionX < 0 || tilePositionX >= tiles.length) && (tilePositionY < 0 || tilePositionY >= tiles[1].length)) {
+            throw new IndexOutOfBoundsException(String.format("Invalid X and Y Positions Given: %s, %s", tilePositionX, tilePositionY));
         }
-        return tileCount;
+        if (tilePositionX < 0 || tilePositionX >= tiles.length) {
+            throw new IndexOutOfBoundsException("Invalid X Position Given: " + tilePositionX);
+        }
+        if (tilePositionY < 0 || tilePositionY >= tiles[1].length) {
+            throw new IndexOutOfBoundsException("Invalid Y Position Given: " + tilePositionY);
+        }
+        return tiles[tilePositionX][tilePositionY];
     }
 }

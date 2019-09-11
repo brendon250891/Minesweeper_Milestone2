@@ -5,10 +5,16 @@
  */
 package Minesweeper;
 
+import Minesweeper.UI.ApplicationView;
+
 /**
  *
  * @author brendon
  */
-public class HexagonalMinesweeper extends Minesweeper {
-    private GameType gameType = GameType.REGULAR;
+public class ApplicationStart {
+    
+    public static void main(String[] args) {
+        ApplicationView view = new ApplicationView();
+        Controller controller = new Controller(view);
+    }
 }

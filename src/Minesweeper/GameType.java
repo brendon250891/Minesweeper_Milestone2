@@ -10,6 +10,7 @@ package Minesweeper;
  * @author brendon
  */
 public enum GameType {
-    REGULAR,
-    CORNER_TO_CORNER
+    MINESWEEPER,
+    HEXAGONAL,
+    COLORING_PROBLEM;
 }

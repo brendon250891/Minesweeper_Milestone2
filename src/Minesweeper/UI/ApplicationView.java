@@ -3,45 +3,94 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Minesweeper;
+package Minesweeper.UI;
+
+import Minesweeper.UI.MTile;
 
 /**
  *
  * @author brendon
  */
-public class ApplicationFrame extends javax.swing.JFrame {
+public class ApplicationView extends javax.swing.JFrame {
+    private MTile[][] tiles;
+    
+    private final String tileHoverColor = "4, 143, 242";
+    
+    private final String tileColor = "8, 128, 214";
 
     /**
      * Creates new form ApplicationFrame
      */
-    public ApplicationFrame() {
+    public ApplicationView() {
         initComponents();
-        int width = 9;
-        int height = 9;
-        minefieldPanel.setLayout(new java.awt.GridLayout(width + 1, height + 1));
-        javax.swing.JButton[][] buttons = new javax.swing.JButton[width][height];
-        
-        for (int x = 0; x < width + 1; x++) {
-            for (int y = 0; y < height + 1; y++) {
-                if (x % 2 == 1 && y == 0 || x % 2 == 0 && y == width) {
-                    minefieldPanel.add(new javax.swing.JLabel("OUT"));
-                } else {
-                    minefieldPanel.add(new HexagonalButton());
-                }
+    }
+    
+    /**
+     * Adds an event listener that listens for combobox item changes.
+     * @param itemListener - The event listener to add.
+     */
+    public void addGameTypeChangedEventHandler(java.awt.event.ItemListener itemListener) {
+        this.gameTypeComboBox.addItemListener(itemListener);
+    }
+    
+    /**
+     * Adds an event listener that listens for combobox item changes.
+     * @param itemListener - The event listener to add.
+     */
+    public void addGameDifficultyChangedEventHandler(java.awt.event.ItemListener itemListener) {
+        this.difficultyComboBox.addItemListener(itemListener);
+    }
+    
+    /**
+     * Initialises the minefield with {@code UITiles}.
+     * @param width - The width of the minefield.
+     * @param height - The height of the minefield.
+     * @param mouseListener - Mouse event listener to add to each {@code UITile}
+     */
+    public void initialiseSquareTileGrid(int width, int height, java.awt.event.MouseListener mouseListener, String diff) {
+        tiles = new MTile[width][height];
+        minefieldPanel.removeAll();
+        int tileWidth = (minefieldPanel.getWidth() / width) - 1;
+        int tileHeight = (minefieldPanel.getHeight() / height) - 1;
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                System.out.println(diff);
+                MTile tile = new MTile(String.format("%s, %s", x, y), tileWidth, tileHeight);
+                tile.addMouseListener(mouseListener);
+                tiles[x][y] = tile;
+                tile.setPreferredSize(new java.awt.Dimension(tileWidth, tileHeight));
+                minefieldPanel.add(tile);
             }
         }
-        /*
-        for (javax.swing.JButton[] button : buttons) {
-            for (javax.swing.JButton b : button) {
-                //b = new javax.swing.JButton();
-                b = new HexagonalButton();
-                b.setBorderPainted(false);
-                b.setPreferredSize(new java.awt.Dimension(5, 5));
-                minefieldPanel.add(b);
-            }
-        }*/
+        minefieldPanel.revalidate();
+        minefieldPanel.repaint();
     }
 
+    public void minefieldTileWasEntered(MTile tile) {
+        if (tile.isEnabled()) {
+            tile.setBackgroundColor(TileColor.HOVER);
+            tile.repaint();
+        }
+    }
+    
+    public void minefieldTileWasExited(MTile tile) {
+        if (tile.isEnabled()) {
+            tile.setBackgroundColor(TileColor.NORMAL);
+            tile.repaint();
+        }
+    }
+    
+    public void minefieldTileRightClicked(MTile tile, String tileText) {
+        tile.setEnabled(false);
+        tile.setBackgroundColor(TileColor.CLICKED);
+        tile.setTileText(tileText);
+        tile.repaint();
+    }
+    
+    public void minefieldTileLeftClicked(MTile tile) {
+        
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -64,7 +113,6 @@ public class ApplicationFrame extends javax.swing.JFrame {
         minefieldPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1000, 800));
 
         applicationPanel.setBackground(new java.awt.Color(51, 51, 51));
 
@@ -114,19 +162,19 @@ public class ApplicationFrame extends javax.swing.JFrame {
 
         minefieldPanel.setBackground(new java.awt.Color(51, 51, 51));
         minefieldPanel.setPreferredSize(new java.awt.Dimension(945, 632));
-        minefieldPanel.setLayout(new java.awt.GridLayout(9, 9));
+        minefieldPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 1, 1));
         minefieldContainerPanel.add(minefieldPanel);
 
         javax.swing.GroupLayout applicationPanelLayout = new javax.swing.GroupLayout(applicationPanel);
         applicationPanel.setLayout(applicationPanelLayout);
         applicationPanelLayout.setHorizontalGroup(
             applicationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(titleBarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(titleBarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addComponent(timerPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(applicationPanelLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(minefieldContainerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 966, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         applicationPanelLayout.setVerticalGroup(
             applicationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,42 +201,6 @@ public class ApplicationFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ApplicationFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ApplicationFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ApplicationFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ApplicationFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ApplicationFrame frame = new ApplicationFrame();
-                frame.setLocationRelativeTo(null);
-                frame.setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel applicationPanel;
@@ -204,3 +216,5 @@ public class ApplicationFrame extends javax.swing.JFrame {
     private javax.swing.JPanel titleBarPanel;
     // End of variables declaration//GEN-END:variables
 }
+
+
