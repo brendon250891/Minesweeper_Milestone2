@@ -48,20 +48,31 @@ public class Minefield {
                 tiles[tilePositionX][tilePositionY] = new Tile(tilePositionX, tilePositionY);
             }
         }
-        selectMineTiles();
+        randomlySelectMineTiles();
     }
     
     /**
      * Randomly allocates mine tiles to the minefield.
      */
-    private void selectMineTiles() {
+    private void randomlySelectMineTiles() {
         Random random = new Random();
         int mineTilesSet = 0;
         while (mineTilesSet < mineCount) {
-            var tile = getTileFromMinefield(random.nextInt(tiles.length - 1), random.nextInt(tiles[1].length - 1));
-            if (!tile.isMineTile()) {
-                tile.setMineTile();
+            var tile = getTile(random.nextInt(tiles.length - 1), random.nextInt(tiles[1].length - 1));
+            if (!tile.isAMine()) {
+                tile.setToMine();
+                incrementAdjacentTileMineCounts(tile);
                 mineTilesSet++;
+            }
+        }
+    }
+    
+    private void incrementAdjacentTileMineCounts(Tile tile) {
+        for (int positionX = tile.getPositionX() - 1; positionX < tile.getPositionX() + 2; positionX++) {
+            for (int positionY = tile.getPositionY() - 1; positionY < tile.getPositionY() + 2; positionY++) {
+                if (positionX >= 0 && positionX < tiles.length && positionY >= 0 && positionY < tiles[1].length) {
+                    getTile(positionX, positionY).incrementLabel();
+                }
             }
         }
     }
@@ -73,8 +84,7 @@ public class Minefield {
      * @param tilePositionY - The position of the tile along the y axis.
      * @return The tile at the given position.
      */
-    public Tile getTileFromMinefield(int tilePositionX, int tilePositionY) throws IndexOutOfBoundsException {
-        System.out.println(String.format("x: %s, y: %s", tiles.length, tiles[1].length));
+    public Tile getTile(int tilePositionX, int tilePositionY) throws IndexOutOfBoundsException {
         if ((tilePositionX < 0 || tilePositionX >= tiles.length) && (tilePositionY < 0 || tilePositionY >= tiles[1].length)) {
             throw new IndexOutOfBoundsException(String.format("Invalid X and Y Positions Given: %s, %s", tilePositionX, tilePositionY));
         }

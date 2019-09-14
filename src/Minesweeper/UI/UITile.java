@@ -14,7 +14,7 @@ import javax.swing.JComponent;
  *
  * @author brendon
  */
-public class MTile extends JComponent {
+public class UITile extends JComponent {
     
     private int width = 0;
     
@@ -24,12 +24,12 @@ public class MTile extends JComponent {
     
     private String foregroundColor = "9, 68, 109";
             
-    private String positionInMinefield = "";
+    private Point position;
     
     private String tileText = "";
    
-    public MTile(String position, int width, int height) {
-        this.positionInMinefield = position;
+    public UITile(Point position, int width, int height) {
+        this.position = position;
         this.width = width;
         this.height = height;
     }
@@ -42,18 +42,10 @@ public class MTile extends JComponent {
     public void setTileText(String text) {
         this.tileText = text;
     }
-   
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawRect(0, 0, getTileWidth(), getTileHeight());
-        g.setColor(getColor(this.backgroundColor));
-        g.fillRect(0, 0, getTileWidth(), getTileHeight());
-        g.setColor(getColor(this.foregroundColor));
-        g.setFont(new java.awt.Font("plain", 0, 24));
-        g.drawString(this.tileText, getTileWidth() / 2, getTileHeight() / 2);
+    
+    public String getTileText() {
+        return tileText;
     }
-   
     
     public int getTileWidth() {
         return width;
@@ -63,12 +55,20 @@ public class MTile extends JComponent {
         return height;
     }
     
-    public String getPositionInGrid() {
-        return this.positionInMinefield;
+    public int getPositionX() {
+        return position.x;
+    }
+    
+    public int getPositionY() {
+        return position.y;
     }
     
     public void setBackgroundColor(TileColor color) {
         this.backgroundColor = color.getColor();
+    }
+    
+    public java.awt.Color getBackgroundColor() {
+        return getColor(backgroundColor);
     }
     
     private java.awt.Color getColor(String colorString) {
@@ -78,5 +78,28 @@ public class MTile extends JComponent {
                     Integer.parseInt(splitString[1].trim()), Integer.parseInt(splitString[2].trim()));
         }
         return java.awt.Color.WHITE;
+    }
+    
+    public java.awt.Color getForegroundColor(String text) {
+        switch (text.toLowerCase()) {
+            case "1":
+                return java.awt.Color.BLACK;
+            case "2":
+                return java.awt.Color.BLUE;
+            case "3":
+                return java.awt.Color.CYAN;
+            case "4":
+                return java.awt.Color.DARK_GRAY;
+            case "5":
+                return java.awt.Color.GREEN;
+            case "6":
+                return java.awt.Color.MAGENTA;
+            case "7":
+                return java.awt.Color.ORANGE;
+            case "8":
+                return java.awt.Color.PINK;
+            default:
+                return java.awt.Color.red;
+        }
     }
 }

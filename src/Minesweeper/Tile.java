@@ -12,53 +12,72 @@ import java.awt.Point;
  * @author brendon
  */
 public class Tile {
+    private Point position;
+    
     private String tileLabel = "";
     
-    private int tilePositionX;
+    private boolean isAvailable = true;
     
-    private int tilePositionY;
-    
-    private boolean isTileInPlay = true;
+    private boolean isFlagged = false;
     
     public Tile(int tilePositionX, int tilePositionY) {
-        this.tilePositionX = tilePositionX;
-        this.tilePositionY = tilePositionY;
+        position = new Point(tilePositionX, tilePositionY);
     }
    
-    public int getTilePositionX() {
-        return tilePositionX;
+    public int getPositionX() {
+        return position.x;
     }
     
-    public int getTilePositionY() {
-        return tilePositionY;
+    public int getPositionY() {
+        return position.y;
     }
     
     /**
      * Sets the tile to selected and returns the tiles label.
      * @return The tiles label
      */
-    public String selectTile() {
-        isTileInPlay = false;
+    public String revealTile() {
+        isAvailable = false;
         return tileLabel;
+    }
+    
+    public String getLabel() {
+        return tileLabel;
+    }
+    
+    public void disableTile() {
+        isAvailable = false;
+    }
+    
+    public void incrementLabel() {
+        if (tileLabel.equals("")) {
+            tileLabel = "1";
+        } else {
+            try {
+                int labelAsInteger = Integer.parseInt(tileLabel);
+                tileLabel = Integer.toString(++labelAsInteger);
+            } catch (Exception e) {
+                
+            }
+        }
     }
     
     /**
      * Sets the tile to be a mine.
      */
-    public void setMineTile() {
+    public void setToMine() {
         tileLabel = "M";
     }
     
-    public boolean isMineTile() {
+    public boolean isAMine() {
         return tileLabel.equalsIgnoreCase("m");
     }
     
-    public void setTileAsFlagged() {
-        tileLabel = "F";
-        isTileInPlay = false;
+    public void flagTile() {
+        isFlagged = !isFlagged;
     }
     
-    public boolean isTileAvailableForSelection() {
-        return isTileInPlay;
+    public boolean isAvailable() {
+        return isAvailable;
     }
 }

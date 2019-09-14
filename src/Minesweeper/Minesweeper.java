@@ -14,9 +14,15 @@ public class Minesweeper {
     
     private final GameDifficulty gameDifficulty;
     
+    private Callback delegate;
+    
     public Minesweeper(GameDifficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
         minefield = new Minefield(gameDifficulty);
+    }
+    
+    public void setDelegate(Controller controller) {
+        delegate = controller;
     }
     
     public void startGame() {
@@ -30,17 +36,35 @@ public class Minesweeper {
      * @return  1 if the game is won, 0 if the game is lost and -1 if no result.
      */
     public String checkForAResult(int tilePositionX, int tilePositionY) {
-        System.out.println(String.format("selected x: %s, selected y: %s", tilePositionX, tilePositionY));
-        var tile = minefield.getTileFromMinefield(tilePositionX, tilePositionY);
+        //var tile = minefield.getTileFromMinefield(tilePositionX, tilePositionY);
         //checkTileNeighbours(tile);
-        return tile.selectTile();
+        //return tile.selectTile();
+        return "";
     }
     
-    private void checkTileNeighbours(Tile tile) {
-        for (int positionX = tile.getTilePositionX() - 1; positionX < tile.getTilePositionX() + 2; positionX++) {
-            for (int positionY = tile.getTilePositionY() - 1; positionY < tile.getTilePositionY() + 2; positionY++) {
-                if (tile.getTilePositionX() >= 0 && tile.getTilePositionX() < gameDifficulty.width()
-                    && tile.getTilePositionY() >= 0 && tile.getTilePositionY() < gameDifficulty.height()) {
+    public void checkTileSelection(int tilePositionX, int tilePositionY) throws Exception {
+        var tile = minefield.getTile(tilePositionX, tilePositionY);
+        if (tile.isAMine()) {
+            tile.disableTile();
+            delegate.revealTile(tile);
+            throw new Exception("Oh Dear, You have hit a mine!\nDo you wish to play again?");
+        } else if (tile.getLabel().equals("") && tile.isAvailable()) {
+            tile.disableTile();
+            delegate.revealTile(tile);
+            revealNeighborhood(tile);
+        } else {
+            tile.disableTile();
+            delegate.revealTile(tile);
+        }
+    }
+    
+    private void revealNeighborhood(Tile tile) {
+        for (int positionX = tile.getPositionX() - 1; positionX < tile.getPositionX() + 2; positionX++) {
+            for (int positionY = tile.getPositionY() - 1; positionY < tile.getPositionY() + 2; positionY++) {
+                if (positionX >=0 && positionX < gameDifficulty.width() && positionY >= 0 && positionY < gameDifficulty.height()) {
+                    try {
+                        checkTileSelection(positionX, positionY); 
+                    } catch (Exception e) {}
                 }
             }
         }
