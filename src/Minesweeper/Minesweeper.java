@@ -5,45 +5,49 @@
  */
 package Minesweeper;
 
+import java.util.Random;
+
 /**
  * Class that handles the logic for a normal game of minesweeper
  * @author brendon
  */
 public class Minesweeper {
-    private final Minefield minefield;
+    protected final Minefield minefield;
     
-    private final GameDifficulty gameDifficulty;
+    protected final GameDifficulty gameDifficulty;
     
-    private Callback delegate;
+    private final int EDGES = 8;
+    
+    protected Callback delegate;
     
     public Minesweeper(GameDifficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
         minefield = new Minefield(gameDifficulty);
     }
     
+    /**
+     * Assigns a delegate to the class that handles revealing tiles on the UI.
+     * @param controller - The class that implements the interface.
+     */
     public void setDelegate(Controller controller) {
         delegate = controller;
     }
     
+    /**
+     * Initiates the start of a game.
+     */
     public void startGame() {
-        minefield.generateMinefield();
+        generateMinefield();
     }
     
     /**
-     * Randomly set the mine tiles for the game.
-     * @param tilePositionX - The tiles X position.
-     * @param tilePositionY - The tiles Y position.
-     * @return  1 if the game is won, 0 if the game is lost and -1 if no result.
+     * 
+     * @param yPosition
+     * @param xPosition
+     * @throws Exception 
      */
-    public String checkForAResult(int tilePositionX, int tilePositionY) {
-        //var tile = minefield.getTileFromMinefield(tilePositionX, tilePositionY);
-        //checkTileNeighbours(tile);
-        //return tile.selectTile();
-        return "";
-    }
-    
-    public void checkTileSelection(int tilePositionX, int tilePositionY) throws Exception {
-        var tile = minefield.getTile(tilePositionX, tilePositionY);
+    public void checkTileSelection(int yPosition, int xPosition) throws Exception {
+        var tile = minefield.getTile(yPosition, xPosition);
         if (tile.isAMine()) {
             tile.disableTile();
             delegate.revealTile(tile);
@@ -52,19 +56,66 @@ public class Minesweeper {
             tile.disableTile();
             delegate.revealTile(tile);
             revealNeighborhood(tile);
-        } else {
+        } else if (!tile.isAMine()) {
             tile.disableTile();
             delegate.revealTile(tile);
         }
     }
     
-    private void revealNeighborhood(Tile tile) {
-        for (int positionX = tile.getPositionX() - 1; positionX < tile.getPositionX() + 2; positionX++) {
-            for (int positionY = tile.getPositionY() - 1; positionY < tile.getPositionY() + 2; positionY++) {
-                if (positionX >=0 && positionX < gameDifficulty.width() && positionY >= 0 && positionY < gameDifficulty.height()) {
+    /**
+     * When a tile is not adjacent to any mines, recursively reveal all other tiles non-adjacent to mines.
+     * @param tile - The tile not adjacent to any mines.
+     */
+    protected void revealNeighborhood(Tile tile) {
+        System.out.println("Hit minesweeper reveal");
+        for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
+            for (int xPosition = tile.getPositionX() - 1; xPosition <= tile.getPositionX() + 1; xPosition++) {
+                if (yPosition >=0 && yPosition < gameDifficulty.height() && xPosition >= 0 && xPosition < gameDifficulty.width()) {
                     try {
-                        checkTileSelection(positionX, positionY); 
+                        checkTileSelection(yPosition, xPosition); 
                     } catch (Exception e) {}
+                }
+            }
+        }
+    }
+    
+    /**
+     * Generates the minefield, based on set difficulty.
+     */
+    private void generateMinefield() {
+        for (int yPosition = 0; yPosition < gameDifficulty.height(); yPosition++) {
+            for (int xPosition = 0; xPosition < gameDifficulty.width(); xPosition++) {
+                minefield.addTile(yPosition, xPosition);
+            }
+        }
+        randomlySelectMineTiles();
+    }
+    
+    /**
+     * Randomly allocates mine tiles to the minefield.
+     */
+    private void randomlySelectMineTiles() {
+        Random random = new Random();
+        int mineTilesSet = 0;
+        while (mineTilesSet < gameDifficulty.mineCount()) {
+            var tile = minefield.getTile(random.nextInt(gameDifficulty.height() - 1), random.nextInt(gameDifficulty.width() - 1));
+            if (!tile.isAMine()) {
+                tile.setToMine();
+                incrementAdjacentTileMineCounts(tile);
+                mineTilesSet++;
+            }
+        }
+    }
+    
+    /**
+     * When a mine is set, increments all adjacent tile labels by 1.
+     * @param tile - The tile that was set as a mine.
+     */
+    protected void incrementAdjacentTileMineCounts(Tile tile) {
+        for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
+            for (int xPosition = tile.getPositionX() - 1; xPosition <= tile.getPositionX() + 1; xPosition++) {
+                if (yPosition >= 0 && yPosition < gameDifficulty.height() && xPosition >= 0 && xPosition < gameDifficulty.width()) {
+                    minefield.getTile(yPosition, xPosition).incrementLabel();
                 }
             }
         }

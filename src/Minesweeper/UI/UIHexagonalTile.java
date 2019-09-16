@@ -5,8 +5,9 @@
  */
 package Minesweeper.UI;
 
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Polygon;
 import java.awt.Point;
 
 /**
@@ -16,30 +17,59 @@ import java.awt.Point;
 public class UIHexagonalTile extends UITile {
     private final int SIDES = 6;
     
-    private boolean oddRow = false;
+    private int[] xvalues = new int[SIDES];
     
-    public UIHexagonalTile(Point position, int width, int height, boolean oddRow) {
+    private int[] yvalues = new int[SIDES];
+    
+    private Point center;
+    
+    private int radius;
+    
+    public UIHexagonalTile(Point position, Point center, int width, int height) {
         super(position, width, height);
-        this.oddRow = oddRow;
+        this.center = center;
+        this.radius = width / 2;
+        setPoints();
+        setPreferredSize(new Dimension(width, height));
+        
+    }
+
+    private void setPoints() {
+        xvalues = new int[] { getTileWidth() / 2, getTileWidth() - 1, getTileWidth() - 1, (getTileWidth() / 2) + 1, 1, 1};
+        yvalues = new int[] {1, (getTileHeight() / 4), ((getTileHeight() / 4) * 3), getTileHeight() - 1, ((getTileHeight() / 4) * 3), (getTileHeight() / 4)};
+    }
+    
+    public int[] getXValues() {
+        return xvalues;
+    }
+    
+    public int[] getYValues() {
+        return yvalues;
+    }
+    
+    public Point getCenter() {
+        return getPosition();
     }
     
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        var hexagon = new Polygon();
-        int[] xvalues = new int[] { ((getTileWidth() / 2) / 2), ((getTileWidth() / 2) / 2) + (getTileWidth() / 2), getTileWidth(), ((getTileWidth() / 2) / 2) + (getTileWidth() / 2), (getTileWidth() / 2) / 2, 0 };
-        int[] yvalues = new int[] {0, 0, getTileHeight() / 2, getTileHeight(), getTileHeight(), getTileHeight() / 2};
-        /*for (int i = 0; i < SIDES; i++) {
-            int x = (int) ((getTileWidth() / 2)  * Math.cos(i * 2 * Math.PI / SIDES));
-            int y = (int) ((getTileHeight() / 2) * Math.sin(i * 2 * Math.PI / SIDES));
-            hexagon.addPoint(x, y);
-        }*/
-        g.setColor(getBackgroundColor());
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setColor(java.awt.Color.BLACK);
         g.drawPolygon(xvalues, yvalues, SIDES);
+        g.setColor(getBackgroundColor());
         g.fillPolygon(xvalues, yvalues, SIDES);
         g.setColor(getForegroundColor(getTileText()));
-        g.setFont(new java.awt.Font("plain", 0, 24));
-        g.drawString(getTileText(), (getTileWidth() / 2) - 8, (getTileWidth() / 2) + 5);
+        g.setFont(new java.awt.Font("plain", 0, 12));
+        //if (!getTileText().equals("")) {
         
+            g.drawString(String.format("y:%s, x:%s", getPositionY(), getPositionX()), (getTileWidth() / 2) - 12, (getTileHeight() / 2) + 5);
+            g.drawString(getTileText(), (getTileWidth() / 2), (getTileHeight() / 2 - 5));
+        //}
     }
+    
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(getTileWidth(), getTileHeight());
+    }
+    
 }

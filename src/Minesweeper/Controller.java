@@ -37,7 +37,7 @@ public class Controller implements Callback {
     
     @Override
     public void revealTile(Tile tile) {
-        view.revealTile(tile.getPositionX(), tile.getPositionY(), tile.getLabel());
+        view.revealTile(tile.getPositionY(), tile.getPositionX(), tile.getLabel());
     }
     
     /**
@@ -185,15 +185,15 @@ public class Controller implements Callback {
             }
         };        
         if (gameType == GameType.MINESWEEPER) {
-            view.initialiseSquareTileGrid(gameDifficulty.width(), gameDifficulty.height(), clickEvents);
+            view.initialiseSquareTileGrid(gameDifficulty.height(), gameDifficulty.width(), clickEvents);
         } else {
-            view.initialiseHexagonalTileGrid(gameDifficulty.width(), gameDifficulty.height(), clickEvents);
+            view.initialiseHexagonalTileGrid(gameDifficulty.height(), gameDifficulty.width(), clickEvents);
         }
     }
     
     private void minefieldTileRightClicked(UITile tile) {
         try {
-            currentGame.checkTileSelection(tile.getPositionX(), tile.getPositionY());
+            currentGame.checkTileSelection(tile.getPositionY(), tile.getPositionX());
         } catch (Exception e) {
             promptUser(e.getMessage());
         }

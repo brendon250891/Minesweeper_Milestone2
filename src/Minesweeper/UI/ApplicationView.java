@@ -6,6 +6,12 @@
 package Minesweeper.UI;
 
 import Minesweeper.UI.UITile;
+import java.awt.Color;
+import java.awt.ComponentOrientation;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Point;
+import javax.swing.BorderFactory;
 
 /**
  *
@@ -46,7 +52,6 @@ public class ApplicationView extends javax.swing.JFrame {
     
     public void toggleGameSettingsPanel() {
         boolean visible = gameSettingsPanel.isVisible();
-        System.out.println(visible);
         gameSettingsPanel.setVisible(!visible);
         gameAreaContainer.setComponentZOrder(gameSettingsPanel, visible ? 1 : 0);
         toggleMinefield(visible);
@@ -68,7 +73,7 @@ public class ApplicationView extends javax.swing.JFrame {
     public void toggleMinefield(boolean isInteractive) {
         for (UITile[] tileArrayOne : tiles) {
             for (UITile tile : tileArrayOne) {
-                tile.setEnabled(isInteractive);
+               tile.setEnabled(isInteractive);
             }
         }
     }
@@ -79,17 +84,18 @@ public class ApplicationView extends javax.swing.JFrame {
      * @param height - The height of the minefield.
      * @param mouseListener - Mouse event listener to add to each {@code UITile}
      */
-    public void initialiseSquareTileGrid(int width, int height, java.awt.event.MouseListener mouseListener) {
+    public void initialiseSquareTileGrid(int height, int width, java.awt.event.MouseListener mouseListener) {
         minefieldPanel.removeAll();
-        tiles = new UISquareTile[width][height];
+        minefieldPanel.setLayout(new java.awt.GridLayout(height, width));
+        tiles = new UISquareTile[height][width];
         int tileWidth = (minefieldPanel.getWidth() / width) - 1;
         int tileHeight = (minefieldPanel.getHeight() / height) - 1;
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                UITile tile = new UISquareTile(new java.awt.Point(x, y), tileWidth, tileHeight);
+        for (int yPosition = 0; yPosition < height; yPosition++) {
+            for (int xPosition = 0; xPosition < width; xPosition++) {
+                UITile tile = new UISquareTile(new java.awt.Point(xPosition, yPosition), tileWidth, tileHeight);
                 tile.addMouseListener(mouseListener);
                 tile.setPreferredSize(new java.awt.Dimension(tileWidth, tileHeight));
-                tiles[x][y] = tile;
+                tiles[yPosition][xPosition] = tile;
                 minefieldPanel.add(tile);
             }
         }
@@ -97,20 +103,32 @@ public class ApplicationView extends javax.swing.JFrame {
         minefieldPanel.repaint();
     }
     
-    public void initialiseHexagonalTileGrid(int width, int height, java.awt.event.MouseListener mouseListener) {
+    public void initialiseHexagonalTileGrid(int height, int width, java.awt.event.MouseListener mouseListener) {
         minefieldPanel.removeAll();
-        tiles = new UIHexagonalTile[width][height];
-        int tileWidth = (minefieldPanel.getWidth() / width) - 1;
-        int tileHeight = (minefieldPanel.getHeight() / height) - 1;
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                UIHexagonalTile tile = new UIHexagonalTile(new java.awt.Point(x, y), tileWidth, tileHeight, y % 2 == 0);
+        minefieldPanel.setLayout(null);
+        minefieldPanel.setPreferredSize(new java.awt.Dimension(700, 700));
+        tiles = new UIHexagonalTile[height][width];
+        int tileWidth = (minefieldPanel.getWidth() / width) - (((minefieldPanel.getWidth() / width) / 2) / width);
+        int tileHeight = (minefieldPanel.getHeight() / height);
+        for (int yPosition = 0; yPosition < height; yPosition++) { 
+            for (int xPosition = 0; xPosition < width; xPosition++) {
+                double angle30 = Math.toRadians(30);
+                double xOff = Math.cos(angle30) * (tileWidth / 2) + 2;
+                double yOff = Math.sin(angle30) * (tileWidth / 2) + 1;
+                int x = (int) (xOff * (xPosition * 2 + 1));
+                int y = (int) (((tileHeight * height) / 2)  + yOff * (yPosition - (height / 2)) * 3);
+                if (yPosition % 2 == 1) {
+                    x = (int) ((xOff) * (xPosition * 2 + 1) + xOff);
+                }
+                var tile = new UIHexagonalTile(new Point(yPosition, xPosition), new Point((tileWidth * yPosition) / 2, (tileHeight * yPosition) / 2), tileWidth, tileHeight);
+                tile.setBounds(x, y, tileWidth, tileHeight);
                 tile.addMouseListener(mouseListener);
-                tile.setPreferredSize(new java.awt.Dimension(tileWidth, tileHeight));
-                tiles[x][y] = tile;
+                tile.setLocation(x, y);
                 minefieldPanel.add(tile);
+                tiles[xPosition][yPosition] = tile;
             }
         }
+
         minefieldPanel.revalidate();
         minefieldPanel.repaint();
     }    
@@ -209,8 +227,8 @@ public class ApplicationView extends javax.swing.JFrame {
 
         minefieldPanel.setBackground(new java.awt.Color(51, 51, 51));
         minefieldPanel.setPreferredSize(new java.awt.Dimension(700, 700));
-        minefieldPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 1, 1));
-        gameAreaContainer.add(minefieldPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, -1));
+        minefieldPanel.setLayout(new java.awt.GridBagLayout());
+        gameAreaContainer.add(minefieldPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, -1, -1));
 
         gameSettingsPanel.setBackground(new java.awt.Color(51, 51, 51));
         gameSettingsPanel.setPreferredSize(new java.awt.Dimension(450, 250));

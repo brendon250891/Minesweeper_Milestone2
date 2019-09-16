@@ -20,8 +20,8 @@ public class Tile {
     
     private boolean isFlagged = false;
     
-    public Tile(int tilePositionX, int tilePositionY) {
-        position = new Point(tilePositionX, tilePositionY);
+    public Tile(int yPosition, int xPosition) {
+        position = new Point(xPosition, yPosition);
     }
    
     public int getPositionX() {

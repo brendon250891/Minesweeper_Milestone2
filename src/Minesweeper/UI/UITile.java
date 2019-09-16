@@ -43,6 +43,10 @@ public class UITile extends JComponent {
         this.tileText = text;
     }
     
+    public Point getPosition() {
+        return position;
+    }
+    
     public String getTileText() {
         return tileText;
     }
@@ -87,7 +91,7 @@ public class UITile extends JComponent {
             case "2":
                 return java.awt.Color.BLUE;
             case "3":
-                return java.awt.Color.CYAN;
+                return java.awt.Color.YELLOW;
             case "4":
                 return java.awt.Color.DARK_GRAY;
             case "5":
@@ -99,7 +103,7 @@ public class UITile extends JComponent {
             case "8":
                 return java.awt.Color.PINK;
             default:
-                return java.awt.Color.red;
+                return java.awt.Color.RED;
         }
     }
 }
