@@ -11,18 +11,21 @@ import java.util.Random;
  * Class that handles the logic for a normal game of minesweeper
  * @author brendon
  */
-public class Minesweeper {
-    protected final Minefield minefield;
-    
-    protected final GameDifficulty gameDifficulty;
-    
-    private final int EDGES = 8;
+public class Minesweeper implements IMinesweeper {
+    protected final IMinefield minefield;
     
     protected Callback delegate;
     
-    public Minesweeper(GameDifficulty gameDifficulty) {
-        this.gameDifficulty = gameDifficulty;
-        minefield = new Minefield(gameDifficulty);
+    public Minesweeper(IMinefield minefield) {
+        this.minefield = minefield;
+    }
+    
+    public void selectTile(int yPosition, int xPosition) {
+        try {
+            checkTileSelection(minefield.getTile(yPosition, xPosition));
+        } catch (Exception e) {
+            
+        }
     }
     
     /**
@@ -40,25 +43,24 @@ public class Minesweeper {
         generateMinefield();
     }
     
+    public void flagSelectedTile(int yPosition, int xPosition) {
+        var tile = minefield.getTile(yPosition, xPosition);
+        tile.flagTile();
+        delegate.revealTile(tile);
+    }
+    
     /**
      * 
-     * @param yPosition
-     * @param xPosition
+     * @param tile
      * @throws Exception 
      */
-    public void checkTileSelection(int yPosition, int xPosition) throws Exception {
-        var tile = minefield.getTile(yPosition, xPosition);
+    public void checkTileSelection(Tile tile) throws Exception {
         if (tile.isAMine()) {
             tile.disableTile();
             delegate.revealTile(tile);
             throw new Exception("Oh Dear, You have hit a mine!\nDo you wish to play again?");
-        } else if (tile.getLabel().equals("") && tile.isAvailable()) {
-            tile.disableTile();
-            delegate.revealTile(tile);
+        } else {
             revealNeighborhood(tile);
-        } else if (!tile.isAMine()) {
-            tile.disableTile();
-            delegate.revealTile(tile);
         }
     }
     
@@ -67,13 +69,17 @@ public class Minesweeper {
      * @param tile - The tile not adjacent to any mines.
      */
     protected void revealNeighborhood(Tile tile) {
-        System.out.println("Hit minesweeper reveal");
-        for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
-            for (int xPosition = tile.getPositionX() - 1; xPosition <= tile.getPositionX() + 1; xPosition++) {
-                if (yPosition >=0 && yPosition < gameDifficulty.height() && xPosition >= 0 && xPosition < gameDifficulty.width()) {
-                    try {
-                        checkTileSelection(yPosition, xPosition); 
-                    } catch (Exception e) {}
+        if (!tile.getLabel().equals("") && !tile.isAMine()) {
+            tile.disableTile();
+            delegate.revealTile(tile);
+        } else if (tile.getLabel().equals("") && tile.isAvailable()) {
+            for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
+                for (int xPosition = tile.getPositionX() - 1; xPosition <= tile.getPositionX() + 1; xPosition++) {
+                    if (yPosition >=0 && yPosition < minefield.getHeight() && xPosition >= 0 && xPosition < minefield.getWidth()) {
+                        tile.disableTile();
+                        delegate.revealTile(tile);
+                        revealNeighborhood(minefield.getTile(yPosition, xPosition));
+                    }
                 }
             }
         }
@@ -94,7 +100,7 @@ public class Minesweeper {
     /**
      * Randomly allocates mine tiles to the minefield.
      */
-    private void randomlySelectMineTiles() {
+    protected void randomlySelectMineTiles() {
         Random random = new Random();
         int mineTilesSet = 0;
         while (mineTilesSet < gameDifficulty.mineCount()) {

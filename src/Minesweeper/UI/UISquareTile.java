@@ -12,6 +12,9 @@ import java.awt.Graphics;
  * @author brendon
  */
 public class UISquareTile extends UITile {
+    private int height = 70;
+    
+    private int width = 70;
     
     public UISquareTile(java.awt.Point position, int width, int height) {
         super(position, width, height);

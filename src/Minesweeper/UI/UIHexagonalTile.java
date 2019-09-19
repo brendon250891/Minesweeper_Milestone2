@@ -29,14 +29,12 @@ public class UIHexagonalTile extends UITile {
         super(position, width, height);
         this.center = center;
         this.radius = width / 2;
-        setPoints();
-        setPreferredSize(new Dimension(width, height));
-        
+        setPoints();       
     }
 
     private void setPoints() {
-        xvalues = new int[] { getTileWidth() / 2, getTileWidth() - 1, getTileWidth() - 1, (getTileWidth() / 2) + 1, 1, 1};
-        yvalues = new int[] {1, (getTileHeight() / 4), ((getTileHeight() / 4) * 3), getTileHeight() - 1, ((getTileHeight() / 4) * 3), (getTileHeight() / 4)};
+        xvalues = new int[] { getTileWidth() / 2, getTileWidth(), getTileWidth(), (getTileWidth() / 2), 0, 0};
+        yvalues = new int[] {0, (getTileHeight() / 4), ((getTileHeight() / 4) * 3), getTileHeight() - 1, ((getTileHeight() / 4) * 3), (getTileHeight() / 4)};
     }
     
     public int[] getXValues() {
@@ -59,12 +57,8 @@ public class UIHexagonalTile extends UITile {
         g.setColor(getBackgroundColor());
         g.fillPolygon(xvalues, yvalues, SIDES);
         g.setColor(getForegroundColor(getTileText()));
-        g.setFont(new java.awt.Font("plain", 0, 12));
-        //if (!getTileText().equals("")) {
-        
-            g.drawString(String.format("y:%s, x:%s", getPositionY(), getPositionX()), (getTileWidth() / 2) - 12, (getTileHeight() / 2) + 5);
-            g.drawString(getTileText(), (getTileWidth() / 2), (getTileHeight() / 2 - 5));
-        //}
+        g.setFont(new java.awt.Font("plain", 0, 24));
+        g.drawString(getTileText(), (getTileWidth() / 2) - 6, (getTileHeight() / 2) + 6);
     }
     
     @Override

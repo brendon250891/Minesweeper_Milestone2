@@ -11,7 +11,7 @@ import java.awt.Point;
  *
  * @author brendon
  */
-public class Tile {
+public class Tile implements ITile {
     private Point position;
     
     private String tileLabel = "";
@@ -49,10 +49,10 @@ public class Tile {
         isAvailable = false;
     }
     
-    public void incrementLabel() {
+    public void incrementAdjacentMineCount() {
         if (tileLabel.equals("")) {
             tileLabel = "1";
-        } else {
+        } else if (!tileLabel.equalsIgnoreCase("m")){
             try {
                 int labelAsInteger = Integer.parseInt(tileLabel);
                 tileLabel = Integer.toString(++labelAsInteger);

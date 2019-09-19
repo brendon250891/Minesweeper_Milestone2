@@ -19,13 +19,13 @@ import javax.swing.JOptionPane;
  * @author brendon
  */
 public class Controller implements Callback {
-    private ApplicationView view;
+    private final ApplicationView view;
     
     private GameDifficulty gameDifficulty = GameDifficulty.BEGINNER;
     
     private GameType gameType = GameType.MINESWEEPER;
     
-    private Minesweeper currentGame;
+    private IMinesweeper currentGame;
     
     public Controller(ApplicationView view) {
         this.view = view;
@@ -44,29 +44,34 @@ public class Controller implements Callback {
      * Sets up the buttons in the game settings menu with event handlers.
      */
     private void setupGameSettingsMenu() {
-        view.addGameSettingsMenuButtonEventHandler(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                view.toggleGameSettingsPanel();
-            }
-            
+        view.addGameSettingsMenuButtonEventHandler((ActionEvent e) -> {
+            view.toggleGameSettingsPanel();
         });
-        view.addGameSettingsSaveButtonEventHandler(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setGameType(view.getSelectedGameType());
-                setGameDifficulty(view.getSelectedGameDifficulty());
-                setupGame();
-                view.toggleGameSettingsPanel();
-            }
+        
+        view.addGameSettingsSaveButtonEventHandler((ActionEvent e) -> {
+            saveGameSettings();
+            view.toggleGameSettingsPanel();
         });
-        view.addGameSettingsCancelButtonEventHandler(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                view.toggleGameSettingsPanel();
+        
+        view.addGameSettingsCancelButtonEventHandler((ActionEvent e) -> {
+            view.toggleGameSettingsPanel();
+        });
+        
+        view.addGameTypeComboBoxChangedEvent((ItemEvent e) -> {
+            var gameModeEnabled = false;
+            if (e.getItem().toString().equalsIgnoreCase("hexagonal")) {
+                gameModeEnabled = true;
             }
+            view.changeGameModeEnabled(gameModeEnabled);
         });
     }    
+    
+    private void saveGameSettings() {
+        setGameType(view.getSelectedGameType());
+        setGameDifficulty(view.getSelectedGameDifficulty());
+        
+        setupGame();
+    }
     
     /**
      * Sets the game type when the game settings are changed.
@@ -106,11 +111,8 @@ public class Controller implements Callback {
      * Sets up the restart game button with an event handler.
      */
     private void setupRestartButton() {
-        view.addRestartGameButtonEventHandler(new java.awt.event.ActionListener() {
-           @Override
-           public void actionPerformed(ActionEvent e) {
-               setupGame();
-           }
+        view.addRestartGameButtonEventHandler((ActionEvent e) -> {
+            setupGame();
         });
     }
     
@@ -120,15 +122,20 @@ public class Controller implements Callback {
     private void setupGame() {
         switch (gameType) {
             case HEXAGONAL:
-                currentGame = new HexagonalMinesweeper(gameDifficulty);
+                var gameMode = getSelectedGameMode(view.getSelectedGameMode());
+                currentGame = new HexagonalMinesweeper(new Minefield(gameDifficulty), GameMode.NORMAL);
                 break;
             default:
-                currentGame = new Minesweeper(gameDifficulty);
+                //IMinefield mf = new Minefield(gameDifficulty);
+                currentGame = new Minesweeper(new Minefield(gameDifficulty));
                 break;
         }
         currentGame.setDelegate(this);
-        currentGame.startGame();
         setupView();
+    }
+    
+    private GameMode getSelectedGameMode(String gameMode) {
+        return gameMode.equalsIgnoreCase("normal") ? GameMode.NORMAL : GameMode.CORNER_TO_CORNER;
     }
     
     /**
@@ -156,7 +163,7 @@ public class Controller implements Callback {
                 if (e.getSource() instanceof UITile && e.getButton() == 1 && ((UITile)e.getSource()).isEnabled()) {
                     minefieldTileRightClicked((UITile)e.getSource());
                 } else {
-                    view.minefieldTileLeftClicked((UITile)e.getSource());
+                    minefieldTileLeftClicked((UITile)e.getSource());
                 }
             }
 
@@ -193,10 +200,14 @@ public class Controller implements Callback {
     
     private void minefieldTileRightClicked(UITile tile) {
         try {
-            currentGame.checkTileSelection(tile.getPositionY(), tile.getPositionX());
+            currentGame.selectTile(tile.getPositionX(), tile.getPositionY());
         } catch (Exception e) {
             promptUser(e.getMessage());
         }
+    }
+    
+    private void minefieldTileLeftClicked(UITile tile) {
+        //currentGame.flagSelectedTile(tile.getPositionY(), tile.getPositionX());
     }
     
     private void promptUser(String message) {

@@ -10,12 +10,14 @@ package Minesweeper;
  *
  * @author brendon
  */
-public class Minefield {
+public class Minefield implements IMinefield {
 
     /**
      * Multi-dimensional array that stores the tiles.
      */
-    private Tile[][] tiles = new Tile[0][0];
+    private ITile[][] tiles;
+    
+    private final GameDifficulty gameDifficulty;
 
     /**
      * Default constructor.
@@ -23,23 +25,16 @@ public class Minefield {
      * @param gameDifficulty - The difficulty of
      */
     public Minefield(GameDifficulty gameDifficulty) {
-        tiles = new Tile[gameDifficulty.height()][gameDifficulty.width()];
+        this.gameDifficulty = gameDifficulty;
+        generateTiles();
     }
     
-    /**
-     * Get the size of the minefield
-     * @return - The number of tiles in the minefield
-     */
-    public int getMinefieldSize() {
-        return tiles.length * tiles[1].length;
-    }
-
     /**
      * Get a tile from the minefield given its x and y position.
      *
      * @param xPosition - The position of the tile along the x axis.
      * @param yPosition - The position of the tile along the y axis.
-     * @return The tile at the given position.
+     * @return The {@code Tile} at the given position.
      */
     public Tile getTile(int yPosition, int xPosition) throws IndexOutOfBoundsException {
         if ((xPosition < 0 || xPosition > tiles[1].length) && (yPosition < 0 || yPosition > tiles.length)) {
@@ -51,8 +46,29 @@ public class Minefield {
         if (yPosition < 0 || yPosition > tiles.length) {
             throw new IndexOutOfBoundsException("Invalid Y Position Given: " + yPosition);
         }
-        return tiles[yPosition][xPosition];
+        return (Tile)tiles[yPosition][xPosition];
     }
+    
+    public int getWidth() {
+        return gameDifficulty.width();
+    }
+    
+    public int getHeight() {
+        return gameDifficulty.height();
+    }
+    
+    public int getMineCount() {
+        return gameDifficulty.mineCount();
+    }
+    
+    /**
+     * Get the size of the minefield
+     * @return - The number of tiles in the minefield
+     */
+    public int getMinefieldSize() {
+        return tiles.length * tiles[1].length;
+    }
+
     
     public void addTile(int yPosition, int xPosition) throws IndexOutOfBoundsException {
         if ((xPosition < 0 || xPosition > tiles[1].length) && (yPosition < 0 || yPosition > tiles.length)) {
@@ -65,5 +81,14 @@ public class Minefield {
             throw new IndexOutOfBoundsException("Invalid Y Position Given: " + yPosition);
         }
         tiles[yPosition][xPosition] = new Tile(yPosition, xPosition);
+    }
+    
+    private void generateTiles() {
+        tiles = new Tile[getHeight()][getWidth()];
+        for (int yPosition = 0; yPosition < getHeight(); yPosition++) {
+            for (int xPosition = 0; xPosition < getWidth(); xPosition++) {
+                tiles[yPosition][xPosition] = TileFactory.getTile(yPosition, xPosition);
+            }
+        }
     }
 }
