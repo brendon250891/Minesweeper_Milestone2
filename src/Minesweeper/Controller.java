@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
  * @author brendon
  */
 public class Controller implements Callback {
-    private final ApplicationView view;
+    private ApplicationView view;
     
     private GameDifficulty gameDifficulty = GameDifficulty.BEGINNER;
     
@@ -36,7 +36,7 @@ public class Controller implements Callback {
     }
     
     @Override
-    public void revealTile(Tile tile) {
+    public void revealTile(ITile tile) {
         view.revealTile(tile.getPositionY(), tile.getPositionX(), tile.getLabel());
     }
     
@@ -65,6 +65,15 @@ public class Controller implements Callback {
             view.changeGameModeEnabled(gameModeEnabled);
         });
     }    
+    
+    /**
+     * Sets up the restart game button with an event handler.
+     */
+    private void setupRestartButton() {
+        view.addRestartGameButtonEventHandler((ActionEvent e) -> {
+            setupGame();
+        });
+    }
     
     private void saveGameSettings() {
         setGameType(view.getSelectedGameType());
@@ -107,14 +116,6 @@ public class Controller implements Callback {
         }
     }
     
-    /**
-     * Sets up the restart game button with an event handler.
-     */
-    private void setupRestartButton() {
-        view.addRestartGameButtonEventHandler((ActionEvent e) -> {
-            setupGame();
-        });
-    }
     
     /**
      * Does any initial model setup that is required such as minefield setup.
@@ -123,11 +124,10 @@ public class Controller implements Callback {
         switch (gameType) {
             case HEXAGONAL:
                 var gameMode = getSelectedGameMode(view.getSelectedGameMode());
-                currentGame = new HexagonalMinesweeper(new Minefield(gameDifficulty), GameMode.NORMAL);
+                currentGame = new HexagonalMinesweeper(new Minefield(gameDifficulty), gameMode);
                 break;
             default:
-                //IMinefield mf = new Minefield(gameDifficulty);
-                currentGame = new Minesweeper(new Minefield(gameDifficulty));
+                currentGame = new Minesweeper(new Minefield(gameDifficulty));                
                 break;
         }
         currentGame.setDelegate(this);
@@ -195,6 +195,13 @@ public class Controller implements Callback {
             view.initialiseSquareTileGrid(gameDifficulty.height(), gameDifficulty.width(), clickEvents);
         } else {
             view.initialiseHexagonalTileGrid(gameDifficulty.height(), gameDifficulty.width(), clickEvents);
+            if (getSelectedGameMode(view.getSelectedGameMode()) == GameMode.CORNER_TO_CORNER) {
+                try {
+                    currentGame.selectTile(0, 0);
+                } catch (Exception e) {
+                    promptUser(e.getMessage());
+                }
+            }
         }
     }
     
@@ -210,16 +217,12 @@ public class Controller implements Callback {
         //currentGame.flagSelectedTile(tile.getPositionY(), tile.getPositionX());
     }
     
-    private void promptUser(String message) {
+    public void promptUser(String message) {
         var selection = JOptionPane.showConfirmDialog(null, message, "Game Over", JOptionPane.YES_NO_OPTION);
         if (selection == 0) {
             setupGame();
         } else {
             view.toggleMinefield(false);
         }
-    }
-    
-    private void checkForAResult() {
-       
-    }
+    }  
 }

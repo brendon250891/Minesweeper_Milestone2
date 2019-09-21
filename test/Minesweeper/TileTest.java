@@ -18,9 +18,4 @@ public class TileTest {
     
     public TileTest() {
     }
-    
-    @Test
-    public void whenATileIsSelectedThenThe() {
-        
-    }    
 }

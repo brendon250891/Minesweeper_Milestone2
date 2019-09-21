@@ -10,6 +10,6 @@ package Minesweeper;
  * @author brendon
  */
 public interface IMinesweeper {
-    void selectTile(int yPosition, int xPosition);
-    void setDelegate(Controller controller);
+    void setDelegate(Callback callback);
+    void selectTile(int yPosition, int xPosition) throws Exception;
 }

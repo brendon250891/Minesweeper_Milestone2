@@ -10,5 +10,6 @@ package Minesweeper;
  * @author brendon
  */
 public interface Callback {
-    public void revealTile(Tile tile);
+    public void revealTile(ITile tile);
+    public void promptUser(String message);
 }

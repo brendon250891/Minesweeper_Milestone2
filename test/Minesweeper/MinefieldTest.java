@@ -18,7 +18,7 @@ public class MinefieldTest {
     public MinefieldTest() {
     }
     
-    @Test
+    /*@Test
     public void whenABeginnerGameIsCreatedThenTheCorrectMinefieldSizeIsSet() {
         Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
         
@@ -118,5 +118,5 @@ public class MinefieldTest {
         
         Assert.assertNotNull(exception);
         Assert.assertEquals("Invalid X and Y Positions Given: -1, 9", exception.getMessage());
-    }
+    }*/
 }

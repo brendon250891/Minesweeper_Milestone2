@@ -19,7 +19,6 @@ import javax.swing.BorderFactory;
 public class ApplicationView extends javax.swing.JFrame {
     private UITile[][] tiles;
     
-    private UIHexagonalTile[][] hexTiles;
 
     /**
      * Creates new form ApplicationFrame
@@ -97,7 +96,8 @@ public class ApplicationView extends javax.swing.JFrame {
      */
     public void initialiseSquareTileGrid(int height, int width, java.awt.event.MouseListener mouseListener) {
         minefieldPanel.removeAll();
-        minefieldPanel.setLayout(new java.awt.GridLayout(height, width));
+        minefieldPanel.setPreferredSize(new java.awt.Dimension(700, 700));
+        minefieldPanel.setLayout(new java.awt.GridLayout(height, width, 1, 1));
         tiles = new UISquareTile[height][width];
         int tileWidth = (minefieldPanel.getWidth() / width) - 1;
         int tileHeight = (minefieldPanel.getHeight() / height) - 1;

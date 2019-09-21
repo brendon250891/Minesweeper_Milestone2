@@ -14,61 +14,40 @@ import java.util.Random;
 public class Minesweeper implements IMinesweeper {
     protected final IMinefield minefield;
     
-    protected Callback delegate;
+    public Callback delegate;
     
     public Minesweeper(IMinefield minefield) {
         this.minefield = minefield;
+        generateMinefield();
     }
     
-    public void selectTile(int yPosition, int xPosition) {
-        try {
-            checkTileSelection(minefield.getTile(yPosition, xPosition));
-        } catch (Exception e) {
-            
+    @Override
+    public void selectTile(int yPosition, int xPosition) throws Exception {
+        var tile = minefield.getTile(yPosition, xPosition);
+        if (tile.isAvailable() && tile.isAMine()) {
+            delegate.revealTile(tile);
+            throw new Exception("Oh Dear, You have hit a mine!\nDo you wish to play again?");
+        } else if (tile.isAvailable()) {
+            revealTile(tile);
         }
     }
     
-    /**
-     * Assigns a delegate to the class that handles revealing tiles on the UI.
-     * @param controller - The class that implements the interface.
-     */
-    public void setDelegate(Controller controller) {
-        delegate = controller;
-    }
-    
-    /**
-     * Initiates the start of a game.
-     */
-    public void startGame() {
-        generateMinefield();
+    @Override
+    public void setDelegate(Callback callback) {
+        delegate = callback;
     }
     
     public void flagSelectedTile(int yPosition, int xPosition) {
         var tile = minefield.getTile(yPosition, xPosition);
-        tile.flagTile();
+        //tile.flagTile();
         delegate.revealTile(tile);
-    }
-    
-    /**
-     * 
-     * @param tile
-     * @throws Exception 
-     */
-    public void checkTileSelection(Tile tile) throws Exception {
-        if (tile.isAMine()) {
-            tile.disableTile();
-            delegate.revealTile(tile);
-            throw new Exception("Oh Dear, You have hit a mine!\nDo you wish to play again?");
-        } else {
-            revealNeighborhood(tile);
-        }
     }
     
     /**
      * When a tile is not adjacent to any mines, recursively reveal all other tiles non-adjacent to mines.
      * @param tile - The tile not adjacent to any mines.
      */
-    protected void revealNeighborhood(Tile tile) {
+    protected void revealTile(ITile tile) {
         if (!tile.getLabel().equals("") && !tile.isAMine()) {
             tile.disableTile();
             delegate.revealTile(tile);
@@ -78,50 +57,42 @@ public class Minesweeper implements IMinesweeper {
                     if (yPosition >=0 && yPosition < minefield.getHeight() && xPosition >= 0 && xPosition < minefield.getWidth()) {
                         tile.disableTile();
                         delegate.revealTile(tile);
-                        revealNeighborhood(minefield.getTile(yPosition, xPosition));
+                        revealTile(minefield.getTile(yPosition, xPosition));
                     }
                 }
             }
         }
     }
     
-    /**
-     * Generates the minefield, based on set difficulty.
-     */
     private void generateMinefield() {
-        for (int yPosition = 0; yPosition < gameDifficulty.height(); yPosition++) {
-            for (int xPosition = 0; xPosition < gameDifficulty.width(); xPosition++) {
+        for (int yPosition = 0; yPosition < minefield.getHeight(); yPosition++) {
+            for (int xPosition = 0; xPosition < minefield.getWidth(); xPosition++) {
                 minefield.addTile(yPosition, xPosition);
             }
         }
         randomlySelectMineTiles();
     }
     
-    /**
-     * Randomly allocates mine tiles to the minefield.
-     */
     protected void randomlySelectMineTiles() {
-        Random random = new Random();
-        int mineTilesSet = 0;
-        while (mineTilesSet < gameDifficulty.mineCount()) {
-            var tile = minefield.getTile(random.nextInt(gameDifficulty.height() - 1), random.nextInt(gameDifficulty.width() - 1));
+        Random rnd = new Random();
+        int minesAdded = 0;
+        while (minesAdded < minefield.getMineCount()) {
+            int randomXPosition = rnd.nextInt(minefield.getWidth() - 1);
+            int randomYPosition = rnd.nextInt(minefield.getHeight() - 1);
+            var tile = minefield.getTile(randomYPosition, randomXPosition);
             if (!tile.isAMine()) {
+                minesAdded++;
                 tile.setToMine();
-                incrementAdjacentTileMineCounts(tile);
-                mineTilesSet++;
+                incrementAdjacentMineCount(tile);
             }
         }
     }
     
-    /**
-     * When a mine is set, increments all adjacent tile labels by 1.
-     * @param tile - The tile that was set as a mine.
-     */
-    protected void incrementAdjacentTileMineCounts(Tile tile) {
+    protected void incrementAdjacentMineCount(ITile tile) {
         for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
             for (int xPosition = tile.getPositionX() - 1; xPosition <= tile.getPositionX() + 1; xPosition++) {
-                if (yPosition >= 0 && yPosition < gameDifficulty.height() && xPosition >= 0 && xPosition < gameDifficulty.width()) {
-                    minefield.getTile(yPosition, xPosition).incrementLabel();
+                if (yPosition >= 0 && yPosition < minefield.getHeight() && xPosition >= 0 && xPosition < minefield.getWidth()) {
+                    minefield.getTile(yPosition, xPosition).incrementAdjacentMineCount(); 
                 }
             }
         }

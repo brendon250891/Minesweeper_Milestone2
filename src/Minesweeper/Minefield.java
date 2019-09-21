@@ -5,6 +5,8 @@
  */
 package Minesweeper;
 
+import java.util.Random;
+
 /**
  * Class responsible for storing and retrieving tiles for a game of minesweeper.
  *
@@ -26,7 +28,12 @@ public class Minefield implements IMinefield {
      */
     public Minefield(GameDifficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
-        generateTiles();
+        tiles = new Tile[gameDifficulty.height()][gameDifficulty.width()];
+    }
+    
+    @Override
+    public void addTile(int yPosition, int xPosition) {
+        tiles[yPosition][xPosition] = TileFactory.makeTile(yPosition, xPosition);
     }
     
     /**
@@ -36,7 +43,8 @@ public class Minefield implements IMinefield {
      * @param yPosition - The position of the tile along the y axis.
      * @return The {@code Tile} at the given position.
      */
-    public Tile getTile(int yPosition, int xPosition) throws IndexOutOfBoundsException {
+    @Override
+    public ITile getTile(int yPosition, int xPosition) throws IndexOutOfBoundsException {
         if ((xPosition < 0 || xPosition > tiles[1].length) && (yPosition < 0 || yPosition > tiles.length)) {
             throw new IndexOutOfBoundsException(String.format("Invalid X and Y Positions Given: %s, %s", xPosition, yPosition));
         }
@@ -46,49 +54,21 @@ public class Minefield implements IMinefield {
         if (yPosition < 0 || yPosition > tiles.length) {
             throw new IndexOutOfBoundsException("Invalid Y Position Given: " + yPosition);
         }
-        return (Tile)tiles[yPosition][xPosition];
+        return tiles[yPosition][xPosition];
     }
     
+    @Override
     public int getWidth() {
         return gameDifficulty.width();
     }
     
+    @Override
     public int getHeight() {
         return gameDifficulty.height();
     }
     
+    @Override
     public int getMineCount() {
         return gameDifficulty.mineCount();
-    }
-    
-    /**
-     * Get the size of the minefield
-     * @return - The number of tiles in the minefield
-     */
-    public int getMinefieldSize() {
-        return tiles.length * tiles[1].length;
-    }
-
-    
-    public void addTile(int yPosition, int xPosition) throws IndexOutOfBoundsException {
-        if ((xPosition < 0 || xPosition > tiles[1].length) && (yPosition < 0 || yPosition > tiles.length)) {
-            throw new IndexOutOfBoundsException(String.format("Invalid X and Y Positions Given: %s, %s", xPosition, yPosition));
-        }
-        if (xPosition < 0 || xPosition > tiles[1].length) {
-            throw new IndexOutOfBoundsException("Invalid X Position Given: " + xPosition);
-        }
-        if (yPosition < 0 || yPosition > tiles.length) {
-            throw new IndexOutOfBoundsException("Invalid Y Position Given: " + yPosition);
-        }
-        tiles[yPosition][xPosition] = new Tile(yPosition, xPosition);
-    }
-    
-    private void generateTiles() {
-        tiles = new Tile[getHeight()][getWidth()];
-        for (int yPosition = 0; yPosition < getHeight(); yPosition++) {
-            for (int xPosition = 0; xPosition < getWidth(); xPosition++) {
-                tiles[yPosition][xPosition] = TileFactory.getTile(yPosition, xPosition);
-            }
-        }
     }
 }

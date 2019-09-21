@@ -10,5 +10,13 @@ package Minesweeper;
  * @author brendon
  */
 public interface ITile {
-    
+    void setToMine();
+    void incrementAdjacentMineCount();
+    void disableTile();
+    String getLabel();
+    boolean isAMine();
+    boolean isFlagged();
+    boolean isAvailable();
+    int getPositionX();
+    int getPositionY();
 }

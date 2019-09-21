@@ -77,6 +77,11 @@ public class Tile implements ITile {
         isFlagged = !isFlagged;
     }
     
+    @Override
+    public boolean isFlagged() {
+        return isFlagged;
+    }
+    
     public boolean isAvailable() {
         return isAvailable;
     }

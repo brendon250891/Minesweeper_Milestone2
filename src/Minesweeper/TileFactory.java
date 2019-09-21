@@ -10,7 +10,7 @@ package Minesweeper;
  * @author brendon
  */
 public class TileFactory {
-    public static Tile getTile(int yPosition, int xPosition) {
+    public static Tile makeTile(int yPosition, int xPosition) {
         return new Tile(yPosition, xPosition);
     }
 }
