@@ -6,7 +6,7 @@
 package Minesweeper;
 
 /**
- *
+ * Enum used to determine the game mode.
  * @author brendon
  */
 public enum GameMode {

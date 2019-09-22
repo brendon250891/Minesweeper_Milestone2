@@ -9,24 +9,39 @@ import Minesweeper.UI.ApplicationView;
 import Minesweeper.UI.UITile;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * The controller updates the model and view based on player interaction.
  * @author brendon
  */
 public class Controller implements Callback {
+    /**
+     * The applications current view.
+     */
     private ApplicationView view;
     
+    /**
+     * The currently selected difficulty.
+     */
     private GameDifficulty gameDifficulty = GameDifficulty.BEGINNER;
     
+    /**
+     * The currently selected game type.
+     */
     private GameType gameType = GameType.MINESWEEPER;
     
+    /**
+     * The current instance of the currently selected game type.
+     */
     private IMinesweeper currentGame;
     
+    /**
+     * Constructor of the controller.
+     * @param view - The view of the application to set.
+     */
     public Controller(ApplicationView view) {
         this.view = view;
         setupGameSettingsMenu();
@@ -35,10 +50,28 @@ public class Controller implements Callback {
         displayView();
     }
     
+    /**
+     * Updates the view to reveal a tile.
+     * @param tile - The tile to reveal.
+     */
     @Override
     public void revealTile(ITile tile) {
         view.revealTile(tile.getPositionY(), tile.getPositionX(), tile.getLabel());
     }
+    
+    /**
+     * Prompts the user with a message.
+     * @param message - The message to display.
+     */
+    @Override
+    public void promptUser(String message) {
+        var selection = JOptionPane.showConfirmDialog(null, message, "Game Over", JOptionPane.YES_NO_OPTION);
+        if (selection == 0) {
+            setupGame();
+        } else {
+            view.toggleMinefield(false);
+        }
+    }  
     
     /**
      * Sets up the buttons in the game settings menu with event handlers.
@@ -75,6 +108,9 @@ public class Controller implements Callback {
         });
     }
     
+    /**
+     * Saves the currently selected game settings.
+     */
     private void saveGameSettings() {
         setGameType(view.getSelectedGameType());
         setGameDifficulty(view.getSelectedGameDifficulty());
@@ -124,16 +160,20 @@ public class Controller implements Callback {
         switch (gameType) {
             case HEXAGONAL:
                 var gameMode = getSelectedGameMode(view.getSelectedGameMode());
-                currentGame = new HexagonalMinesweeper(new Minefield(gameDifficulty), gameMode);
+                currentGame = new HexagonalMinesweeper(new Minefield(gameDifficulty), this, gameMode);
                 break;
             default:
-                currentGame = new Minesweeper(new Minefield(gameDifficulty));                
+                currentGame = new Minesweeper(new Minefield(gameDifficulty), this);                
                 break;
         }
-        currentGame.setDelegate(this);
         setupView();
     }
     
+    /**
+     * Gets the currently selected game mode.
+     * @param gameMode - The selected game mode as a string.
+     * @return The selected game mode.
+     */
     private GameMode getSelectedGameMode(String gameMode) {
         return gameMode.equalsIgnoreCase("normal") ? GameMode.NORMAL : GameMode.CORNER_TO_CORNER;
     }
@@ -205,6 +245,10 @@ public class Controller implements Callback {
         }
     }
     
+    /**
+     * Handles the 
+     * @param tile 
+     */
     private void minefieldTileRightClicked(UITile tile) {
         try {
             currentGame.selectTile(tile.getPositionX(), tile.getPositionY());
@@ -216,13 +260,4 @@ public class Controller implements Callback {
     private void minefieldTileLeftClicked(UITile tile) {
         //currentGame.flagSelectedTile(tile.getPositionY(), tile.getPositionX());
     }
-    
-    public void promptUser(String message) {
-        var selection = JOptionPane.showConfirmDialog(null, message, "Game Over", JOptionPane.YES_NO_OPTION);
-        if (selection == 0) {
-            setupGame();
-        } else {
-            view.toggleMinefield(false);
-        }
-    }  
 }

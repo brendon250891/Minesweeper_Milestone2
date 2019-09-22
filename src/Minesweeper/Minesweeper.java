@@ -12,15 +12,33 @@ import java.util.Random;
  * @author brendon
  */
 public class Minesweeper implements IMinesweeper {
+    /**
+     * The minefield that the minesweeper game uses.
+     */
     protected final IMinefield minefield;
     
+    /**
+     * The delegate for the minesweeper class.
+     */
     public Callback delegate;
     
-    public Minesweeper(IMinefield minefield) {
+    /**
+     * Constructor
+     * @param minefield - The minefield instance to use.
+     * @param delegate - The delegate of the minesweeper class.
+     */
+    public Minesweeper(IMinefield minefield, Callback delegate) {
         this.minefield = minefield;
+        this.delegate = delegate;
         generateMinefield();
     }
     
+    /**
+     * Handles the selection of a tile.
+     * @param yPosition - The position of the tile along the y axis.
+     * @param xPosition - The position of the tile along the x axis.
+     * @throws Exception If the tile selected is a mine an exception is thrown.
+     */
     @Override
     public void selectTile(int yPosition, int xPosition) throws Exception {
         var tile = minefield.getTile(yPosition, xPosition);
@@ -31,12 +49,12 @@ public class Minesweeper implements IMinesweeper {
             revealTile(tile);
         }
     }
-    
-    @Override
-    public void setDelegate(Callback callback) {
-        delegate = callback;
-    }
-    
+   
+    /**
+     * Flags the selected tile making it unable to be revealable.
+     * @param yPosition - The position of the tile along the y axis.
+     * @param xPosition - The position of the tile along the x axis.
+     */
     public void flagSelectedTile(int yPosition, int xPosition) {
         var tile = minefield.getTile(yPosition, xPosition);
         //tile.flagTile();
@@ -64,6 +82,9 @@ public class Minesweeper implements IMinesweeper {
         }
     }
     
+    /**
+     * Intialises the minefield with tiles.
+     */
     private void generateMinefield() {
         for (int yPosition = 0; yPosition < minefield.getHeight(); yPosition++) {
             for (int xPosition = 0; xPosition < minefield.getWidth(); xPosition++) {
@@ -73,6 +94,9 @@ public class Minesweeper implements IMinesweeper {
         randomlySelectMineTiles();
     }
     
+    /**
+     * Randomly selects the tiles that are to be mines.
+     */
     protected void randomlySelectMineTiles() {
         Random rnd = new Random();
         int minesAdded = 0;
@@ -88,6 +112,10 @@ public class Minesweeper implements IMinesweeper {
         }
     }
     
+    /**
+     * When a tile is selected to be a mine its adjacent tiles mine counts are incremented.
+     * @param tile - The tile that is a mine.
+     */
     protected void incrementAdjacentMineCount(ITile tile) {
         for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
             for (int xPosition = tile.getPositionX() - 1; xPosition <= tile.getPositionX() + 1; xPosition++) {

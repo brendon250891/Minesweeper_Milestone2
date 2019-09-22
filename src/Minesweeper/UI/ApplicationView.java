@@ -5,53 +5,82 @@
  */
 package Minesweeper.UI;
 
-import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Point;
-import javax.swing.BorderFactory;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseListener;
 
 /**
  *
  * @author brendon
  */
 public class ApplicationView extends javax.swing.JFrame {
+    /**
+     * Array of UITiles that make up the minefield.
+     */
     private UITile[][] tiles;
     
 
     /**
-     * Creates new form ApplicationFrame
+     * Constructor for the components of the view.
      */
     public ApplicationView() {
         initComponents();
         configureSettingsPanel();
     }
     
+    /**
+     * Sets the default configuration of the game settings panel.
+     */
     private void configureSettingsPanel() {
         gameSettingsPanel.setVisible(false);
     }
    
-    public void addRestartGameButtonEventHandler(java.awt.event.ActionListener actionListener) {
+    /**
+     * Adds an action listener monitoring player clicks to the restart game button.
+     * @param actionListener - The action listener being added.
+     */
+    public void addRestartGameButtonEventHandler(ActionListener actionListener) {
         restartGameButton.addActionListener(actionListener);
     }
     
-    public void addGameSettingsMenuButtonEventHandler(java.awt.event.ActionListener actionListener) {
+    /**
+     * Adds an action listener monitoring player clicks to the game settings button.
+     * @param actionListener - The action listener being added.
+     */
+    public void addGameSettingsMenuButtonEventHandler(ActionListener actionListener) {
         gameSettingsMenuButton.addActionListener(actionListener);
     }
     
-    public void addGameSettingsSaveButtonEventHandler(java.awt.event.ActionListener actionListener) {
+    /**
+     * Adds an action listener monitoring player clicks to the save game settings button in the game settings menu.
+     * @param actionListener - The action listener being added.
+     */
+    public void addGameSettingsSaveButtonEventHandler(ActionListener actionListener) {
         gameSettingsMenuSaveButton.addActionListener(actionListener);
     }
     
-    public void addGameSettingsCancelButtonEventHandler(java.awt.event.ActionListener actionListener) {
+    /**
+     * Adds an action listener monitoring player clicks to the cancel button in the game settings menu.
+     * @param actionListener - The action listener being added.
+     */
+    public void addGameSettingsCancelButtonEventHandler(ActionListener actionListener) {
         gameSettingsMenuCancelButton.addActionListener(actionListener);
     }
     
-    public void addGameTypeComboBoxChangedEvent(java.awt.event.ItemListener itemListener) {
+    /**
+     * Adds an action listener monitoring for value changes of the game type combo box.
+     * @param itemListener - The action listener being added.
+     */
+    public void addGameTypeComboBoxChangedEvent(ItemListener itemListener) {
         gameTypeComboBox.addItemListener(itemListener);
     }
     
+    /**
+     * Toggles the display of the game settings panel.
+     */
     public void toggleGameSettingsPanel() {
         boolean visible = gameSettingsPanel.isVisible();
         gameSettingsPanel.setVisible(!visible);
@@ -59,27 +88,53 @@ public class ApplicationView extends javax.swing.JFrame {
         toggleMinefield(visible);
     }
     
+    /**
+     * Enables / disables the game mode combo box based on whether hexagonal minesweeper was selected.
+     * @param enabled - True if hexagonal minesweeper is selected, false otherwise.
+     */
     public void changeGameModeEnabled(boolean enabled) {
         gameModeComboBox.setEnabled(enabled);
     }
     
+    /**
+     * Gets the selected value from the game type combo box.
+     * @return The selected game type value.
+     */
     public String getSelectedGameType() {
         return gameTypeComboBox.getSelectedItem().toString();
     }
     
+    /**
+     * Gets the selected value from the game difficulty combo box.
+     * @return The selected difficulty.
+     */
     public String getSelectedGameDifficulty() {
         return difficultyComboBox.getSelectedItem().toString();
     }
     
+    /**
+     * Gets the selected value from the game mode combo box.
+     * @return The selected game mode.
+     */
     public String getSelectedGameMode() {
         return gameModeComboBox.getSelectedItem().toString();
     }
     
+    /**
+     * Reveals the tile at a given position in the minefield.
+     * @param positionX - The tiles position along the x axis.
+     * @param positionY - The tiles position along the y axis.
+     * @param tileLabel - The label of the tile to display.
+     */
     public void revealTile(int positionX, int positionY, String tileLabel) {
         tiles[positionX][positionY].setTileText(tileLabel);
         disableTile(tiles[positionX][positionY]);
     }
     
+    /**
+     * Toggles all the tiles in the minefields enabled property.
+     * @param isInteractive True if the tiles should be enabled, false otherwise.
+     */
     public void toggleMinefield(boolean isInteractive) {
         for (UITile[] tileArrayOne : tiles) {
             for (UITile tile : tileArrayOne) {
@@ -89,23 +144,23 @@ public class ApplicationView extends javax.swing.JFrame {
     }
     
     /**
-     * Initialises the minefield with {@code UITiles}.
+     * Initialises the minefieldPanel with a square tiled grid.
      * @param width - The width of the minefield.
      * @param height - The height of the minefield.
-     * @param mouseListener - Mouse event listener to add to each {@code UITile}
+     * @param mouseListener - Mouse event listener to add to each tile.
      */
-    public void initialiseSquareTileGrid(int height, int width, java.awt.event.MouseListener mouseListener) {
+    public void initialiseSquareTileGrid(int height, int width, MouseListener mouseListener) {
         minefieldPanel.removeAll();
-        minefieldPanel.setPreferredSize(new java.awt.Dimension(700, 700));
-        minefieldPanel.setLayout(new java.awt.GridLayout(height, width, 1, 1));
+        minefieldPanel.setPreferredSize(new Dimension(700, 700));
+        minefieldPanel.setLayout(new GridLayout(height, width, 1, 1));
         tiles = new UISquareTile[height][width];
         int tileWidth = (minefieldPanel.getWidth() / width) - 1;
         int tileHeight = (minefieldPanel.getHeight() / height) - 1;
         for (int yPosition = 0; yPosition < height; yPosition++) {
             for (int xPosition = 0; xPosition < width; xPosition++) {
-                UITile tile = new UISquareTile(new java.awt.Point(yPosition, xPosition), tileWidth, tileHeight);
+                UITile tile = new UISquareTile(new Point(yPosition, xPosition), tileWidth, tileHeight);
                 tile.addMouseListener(mouseListener);
-                tile.setPreferredSize(new java.awt.Dimension(tileWidth, tileHeight));
+                tile.setPreferredSize(new Dimension(tileWidth, tileHeight));
                 tiles[yPosition][xPosition] = tile;
                 minefieldPanel.add(tile);
             }
@@ -114,10 +169,16 @@ public class ApplicationView extends javax.swing.JFrame {
         minefieldPanel.repaint();
     }
     
-    public void initialiseHexagonalTileGrid(int height, int width, java.awt.event.MouseListener mouseListener) {
+    /**
+     * Initialises the minefieldPanel with a hexagonal tiled grid.
+     * @param width - The width of the minefield.
+     * @param height - The height of the minefield.
+     * @param mouseListener - Mouse event listener to add to each tile.
+     */
+    public void initialiseHexagonalTileGrid(int height, int width, MouseListener mouseListener) {
         minefieldPanel.removeAll();
         minefieldPanel.setLayout(null);
-        minefieldPanel.setPreferredSize(new java.awt.Dimension(800, 800));
+        minefieldPanel.setPreferredSize(new Dimension(800, 800));
         tiles = new UIHexagonalTile[height][width];
         int tileWidth = (700 / width) - (((700 / width) / 2) / width);
         int tileHeight = (700 / height);
@@ -143,14 +204,28 @@ public class ApplicationView extends javax.swing.JFrame {
         minefieldPanel.repaint();
     }    
     
+    /**
+     * Provides additional x offset values based on the width of the minefield.
+     * @param width - The width of the minefield.
+     * @return Additional x offset.
+     */
     private int getAdditionalXOffset(int width) {
         return width == 9 ? 8 : 4;
     }
     
+    /**
+     * Provides additional y offset values based on the height of the minefield.
+     * @param height - The height of the minefield.
+     * @return Additional y offset.
+     */
     private int getAdditionalYOffset(int height) {
         return height == 9 ? 2 : height == 16 ? 1 : -5;
     }
 
+    /**
+     * Changes the background of the tile when the mouse enters a tile.
+     * @param tile - The tile that the mouse has entered.
+     */
     public void minefieldTileWasEntered(UITile tile) {
         if (tile.isEnabled()) {
             tile.setBackgroundColor(TileColor.HOVER);
@@ -158,6 +233,10 @@ public class ApplicationView extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Changes the background of the tile when the mouse exits the tile.
+     * @param tile - The tile that was exited.
+     */
     public void minefieldTileWasExited(UITile tile) {
         if (tile.isEnabled()) {
             tile.setBackgroundColor(TileColor.NORMAL);
@@ -165,16 +244,16 @@ public class ApplicationView extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Disables a single given tile in the minefield.
+     * @param tile - The tile to disable.
+     */
     public void disableTile(UITile tile) {
         tile.setEnabled(false);
         tile.setBackgroundColor(TileColor.CLICKED);
         tile.repaint();
     }
-    
-    public void minefieldTileLeftClicked(UITile tile) {
-        
-    }
-    
+   
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

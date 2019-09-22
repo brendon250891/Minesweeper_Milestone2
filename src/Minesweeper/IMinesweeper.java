@@ -6,10 +6,9 @@
 package Minesweeper;
 
 /**
- *
+ * Interface that exposes methods of classes that implement this interface.
  * @author brendon
  */
 public interface IMinesweeper {
-    void setDelegate(Callback callback);
     void selectTile(int yPosition, int xPosition) throws Exception;
 }

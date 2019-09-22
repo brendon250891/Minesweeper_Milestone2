@@ -6,7 +6,7 @@
 package Minesweeper;
 
 /**
- *
+ * Enum used to determine the game type.
  * @author brendon
  */
 public enum GameType {

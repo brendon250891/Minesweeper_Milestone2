@@ -5,8 +5,6 @@
  */
 package Minesweeper;
 
-import java.util.Random;
-
 /**
  * Class responsible for storing and retrieving tiles for a game of minesweeper.
  *
@@ -19,6 +17,9 @@ public class Minefield implements IMinefield {
      */
     private ITile[][] tiles;
     
+    /**
+     * The difficulty of the minefield.
+     */
     private final GameDifficulty gameDifficulty;
 
     /**
@@ -31,6 +32,11 @@ public class Minefield implements IMinefield {
         tiles = new Tile[gameDifficulty.height()][gameDifficulty.width()];
     }
     
+    /**
+     * Adds a tile given it's x and y positions using the TileFactory class.
+     * @param yPosition - The position of the tile along the y axis.
+     * @param xPosition - The position of the tile along the x axis.
+     */
     @Override
     public void addTile(int yPosition, int xPosition) {
         tiles[yPosition][xPosition] = TileFactory.makeTile(yPosition, xPosition);
@@ -57,16 +63,28 @@ public class Minefield implements IMinefield {
         return tiles[yPosition][xPosition];
     }
     
+    /**
+     * Gets the width of the minefield.
+     * @return The width of the minefield.
+     */
     @Override
     public int getWidth() {
         return gameDifficulty.width();
     }
     
+    /**
+     * Gets the height of the minefield.
+     * @return The height of the minefield.
+     */
     @Override
     public int getHeight() {
         return gameDifficulty.height();
     }
     
+    /**
+     * Gets the number of mines in the minefield.
+     * @return The number of mines in the minefield.
+     */
     @Override
     public int getMineCount() {
         return gameDifficulty.mineCount();

@@ -13,13 +13,27 @@ import java.util.Random;
  */
 public class HexagonalMinesweeper extends Minesweeper {
 
+    /**
+     * The selected game mode.
+     */
     private GameMode gameMode = GameMode.NORMAL;
     
-    public HexagonalMinesweeper(IMinefield minefield, GameMode gameMode) {
-        super(minefield);
+    /**
+     * Constructor 
+     * @param minefield - The minefield instance to use.
+     * @param delegate - The delegate of the minesweeper class.
+     * @param gameMode - The game mode to set.
+     */
+    public HexagonalMinesweeper(IMinefield minefield, Callback delegate, GameMode gameMode) {
+        super(minefield, delegate);
         this.gameMode = gameMode;
     }
     
+    /**
+     * handles the selection of a tile from the minefield.
+     * @param yPosition - The position of the tile along the y axis.
+     * @param xPosition - The position of the tile along the x axis.
+     */
     @Override
     public void selectTile(int yPosition, int xPosition) {
         try {
@@ -33,6 +47,12 @@ public class HexagonalMinesweeper extends Minesweeper {
         }
     }
     
+    /**
+     * Based on the rules of corner-to-corner minesweeper, a play can only select a tile that is adjacent to an already revealed tile.
+     * This function checks to see if the tile that was selected is a valid choice.
+     * @param tile - The tile that was selected.
+     * @return true if the tile is valid, false otherwise.
+     */
     private boolean checkTileIsAdjacentToRevealedTile(ITile tile) {
         var availableCount = 0;
         for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
@@ -52,6 +72,10 @@ public class HexagonalMinesweeper extends Minesweeper {
         return availableCount > 0;
     }
     
+    /**
+     * Overrides the base method to check for the game mode selected to select the correct mines.
+     * Based on the rules of corner-to-corner minesweeper, the top left and bottom right corner tiles cannot be mines.
+     */
     @Override
     protected void randomlySelectMineTiles() {
         if (gameMode == GameMode.NORMAL) {
@@ -83,7 +107,7 @@ public class HexagonalMinesweeper extends Minesweeper {
     
     /**
      * Increments adjacent mine counts for the hexagonal version as there are only 6 possible neighbors. 
-     * Also as odd rows are offset they have different neighbors to even rows.
+     * As the grid is offset odd rows have different neighbors to even rows.
      * @param tile - The mine tile.
      */
     @Override

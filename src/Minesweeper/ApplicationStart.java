@@ -8,7 +8,7 @@ package Minesweeper;
 import Minesweeper.UI.ApplicationView;
 
 /**
- *
+ * Class that contains the main method that is the entry point to start up the application.
  * @author brendon
  */
 public class ApplicationStart {

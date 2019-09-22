@@ -6,7 +6,7 @@
 package Minesweeper;
 
 /**
- *
+ * Interface that exposes methods of classes that implement this interface.
  * @author brendon
  */
 public interface ITile {
