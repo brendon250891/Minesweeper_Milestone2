@@ -17,6 +17,18 @@ public interface Callback {
     public void revealTile(ITile tile);
     
     /**
+     * Tells the controller to update the view by flagging the passed tile.
+     * @param tile - The tile to flag.
+     */
+    public void flagTile(ITile tile);
+    
+    /**
+     * Tells the controller to update the timer in the view.
+     * @param time - the time to set the timer too.
+     */
+    public void updateTimer(String time);
+    
+    /**
      * Prompts the player with a message.
      * @param message - The message to display to the player.
      */

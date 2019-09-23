@@ -11,4 +11,6 @@ package Minesweeper;
  */
 public interface IMinesweeper {
     void selectTile(int yPosition, int xPosition) throws Exception;
+    void flagTile(int yPosition, int xPosition);
+    void stopTimer();
 }

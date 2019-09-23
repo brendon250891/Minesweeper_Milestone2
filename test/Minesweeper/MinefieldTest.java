@@ -5,6 +5,7 @@
  */
 package Minesweeper;
 
+import java.util.Timer;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -15,79 +16,60 @@ import org.junit.Ignore;
  */
 public class MinefieldTest {
     
+    
     public MinefieldTest() {
     }
     
-    /*@Test
+    @Test
     public void whenABeginnerGameIsCreatedThenTheCorrectMinefieldSizeIsSet() {
         Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
         
-        Assert.assertEquals(9 * 9, minefield.getMinefieldSize());
+        Assert.assertEquals(9 * 9, minefield.getSize());
     }
     
     @Test
     public void whenAnIntermediateGameIsCreatedThenTheCorrectMinefieldSizeIsSet() {
         Minefield minefield = new Minefield(GameDifficulty.INTERMEDIATE);
         
-        Assert.assertEquals(16 * 16, minefield.getMinefieldSize());
+        Assert.assertEquals(16 * 16, minefield.getSize());
     }
     
     @Test
     public void whenAnExpertGameIsCreatedThenTheCorrectMinefieldSizeIsSet() {
         Minefield minefield = new Minefield(GameDifficulty.EXPERT);
         
-        Assert.assertEquals(16 * 30, minefield.getMinefieldSize());
+        Assert.assertEquals(16 * 30, minefield.getSize());
     }
     
     @Test
-    public void whenABeginnerGameIsCreatedThenTheCorrectNumberOfMinesAreSet() {
+    public void whenAnTileIsSelectedThenTheCorrectTileIsReturned() {        
         Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
         
-        minefield.generateMinefield();
-    }
-    
-    @Test
-    public void whenAnTileIsSelectedThenTheCorrectTileIsReturned() {
-        Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
+        var tile = minefield.getTile(0, 0);
+        var tileTwo = minefield.getTile(5, 1);
         
-        minefield.generateMinefield();
-        Tile tile = minefield.getTileFromMinefield(0, 0);
-        
-        Assert.assertEquals(0, tile.getTilePositionX());
-        Assert.assertEquals(0, tile.getTilePositionY());
+        Assert.assertEquals(0, tile.getPositionX());
+        Assert.assertEquals(0, tile.getPositionY());
+        Assert.assertEquals(1, tileTwo.getPositionX());
+        Assert.assertEquals(5, tileTwo.getPositionY());
     }
     
     @Test(expected=IndexOutOfBoundsException.class)
     public void whenAnInvalidTileXAndYPositionIsGivenThenAnIndexOutOfBoundsExceptionIsThrown() {
         Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
-        minefield.getTileFromMinefield(-1, GameDifficulty.BEGINNER.height());
+        minefield.getTile(-1, GameDifficulty.BEGINNER.height());
     }
     
     @Test(expected=IndexOutOfBoundsException.class)
     public void whenAnInvalidTileXPositionIsGivenThenAnIndexOutOfBoundsExeceptionIsThrown() {
         Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
-        minefield.getTileFromMinefield(-1, 0);
+        minefield.getTile(-1, 0);
     }
     
     @Test(expected=IndexOutOfBoundsException.class)
     public void whenAnInvalidTileYPositionIsGiventThenAnIndexOutOfBoundsExceptionIsThrown() {
         Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
-        minefield.getTileFromMinefield(0, -1);
-    }
-    
-    @Test
-    public void whenAnInvalidTileXPositionIndexOutOfBoundsExceptionIsThrownTheCorrectMessageIsReturned() {
-        Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
-        Exception exception = null;
-        
-        try {
-            minefield.getTileFromMinefield(-1, 0);
-        } catch(IndexOutOfBoundsException e) {
-            exception = e;
-        }
-        
-        Assert.assertNotNull(exception);
-        Assert.assertEquals("Invalid X Position Given: -1", exception.getMessage());
+        minefield.getTile(0, -1);
     }
     
     @Test
@@ -96,8 +78,8 @@ public class MinefieldTest {
         Exception exception = null;
         
         try {
-            minefield.getTileFromMinefield(0, -1);
-        } catch (IndexOutOfBoundsException e) {
+            minefield.getTile(-1, 0);
+        } catch(IndexOutOfBoundsException e) {
             exception = e;
         }
         
@@ -106,17 +88,32 @@ public class MinefieldTest {
     }
     
     @Test
+    public void whenAnInvalidTileXPositionIndexOutOfBoundsExceptionIsThrownTheCorrectMessageIsReturned() {
+        Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
+        Exception exception = null;
+        
+        try {
+            minefield.getTile(0, -1);
+        } catch (IndexOutOfBoundsException e) {
+            exception = e;
+        }
+        
+        Assert.assertNotNull(exception);
+        Assert.assertEquals("Invalid X Position Given: -1", exception.getMessage());
+    }
+    
+    @Test
     public void whenAnInvalidTileXAndYPositionIndexOutOfBoundsExceptionIsThrownThenTheCorrectMessageIsReturned() {
         Minefield minefield = new Minefield(GameDifficulty.BEGINNER);
         Exception exception = null;
         
         try {
-            minefield.getTileFromMinefield(-1, GameDifficulty.BEGINNER.height());
+            minefield.getTile(GameDifficulty.BEGINNER.height(), -1);
         } catch (IndexOutOfBoundsException e) {
             exception = e;
         }
         
         Assert.assertNotNull(exception);
         Assert.assertEquals("Invalid X and Y Positions Given: -1, 9", exception.getMessage());
-    }*/
+    }
 }

@@ -13,6 +13,7 @@ public interface ITile {
     void setToMine();
     void incrementAdjacentMineCount();
     void disableTile();
+    void flagTile();
     String getLabel();
     boolean isAMine();
     boolean isFlagged();

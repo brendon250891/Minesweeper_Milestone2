@@ -29,17 +29,7 @@ public class Minefield implements IMinefield {
      */
     public Minefield(GameDifficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
-        tiles = new Tile[gameDifficulty.height()][gameDifficulty.width()];
-    }
-    
-    /**
-     * Adds a tile given it's x and y positions using the TileFactory class.
-     * @param yPosition - The position of the tile along the y axis.
-     * @param xPosition - The position of the tile along the x axis.
-     */
-    @Override
-    public void addTile(int yPosition, int xPosition) {
-        tiles[yPosition][xPosition] = TileFactory.makeTile(yPosition, xPosition);
+        generateTiles();
     }
     
     /**
@@ -51,16 +41,21 @@ public class Minefield implements IMinefield {
      */
     @Override
     public ITile getTile(int yPosition, int xPosition) throws IndexOutOfBoundsException {
-        if ((xPosition < 0 || xPosition > tiles[1].length) && (yPosition < 0 || yPosition > tiles.length)) {
+        if ((yPosition < 0 || yPosition >= tiles.length) && (xPosition < 0 || xPosition >= tiles[1].length)) {
             throw new IndexOutOfBoundsException(String.format("Invalid X and Y Positions Given: %s, %s", xPosition, yPosition));
         }
-        if (xPosition < 0 || xPosition > tiles[1].length) {
+        if (xPosition < 0 || xPosition >= tiles[1].length) {
             throw new IndexOutOfBoundsException("Invalid X Position Given: " + xPosition);
         }
-        if (yPosition < 0 || yPosition > tiles.length) {
+        if (yPosition < 0 || yPosition >= tiles.length) {
             throw new IndexOutOfBoundsException("Invalid Y Position Given: " + yPosition);
         }
         return tiles[yPosition][xPosition];
+    }
+    
+    @Override
+    public int getSize() {
+        return tiles.length * tiles[1].length;
     }
     
     /**
@@ -88,5 +83,14 @@ public class Minefield implements IMinefield {
     @Override
     public int getMineCount() {
         return gameDifficulty.mineCount();
+    }
+    
+    private void generateTiles() {
+        tiles = new Tile[gameDifficulty.height()][gameDifficulty.width()];
+        for (int yPosition = 0; yPosition < gameDifficulty.height(); yPosition++) {
+            for (int xPosition = 0; xPosition < gameDifficulty.width(); xPosition++) {
+                tiles[yPosition][xPosition] = TileFactory.makeTile(yPosition, xPosition);
+            }
+        }
     }
 }

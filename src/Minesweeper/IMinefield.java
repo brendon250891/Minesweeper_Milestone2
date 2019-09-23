@@ -11,7 +11,7 @@ package Minesweeper;
  */
 public interface IMinefield {
     ITile getTile(int yPosition, int xPosition);
-    void addTile(int yPosition, int xPosition);
+    int getSize();
     int getWidth();
     int getHeight();
     int getMineCount();

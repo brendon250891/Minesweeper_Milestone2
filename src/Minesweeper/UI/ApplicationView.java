@@ -126,9 +126,19 @@ public class ApplicationView extends javax.swing.JFrame {
      * @param positionY - The tiles position along the y axis.
      * @param tileLabel - The label of the tile to display.
      */
-    public void revealTile(int positionX, int positionY, String tileLabel) {
-        tiles[positionX][positionY].setTileText(tileLabel);
-        disableTile(tiles[positionX][positionY]);
+    public void revealTile(int positionY, int positionX, String tileLabel) {
+        tiles[positionY][positionX].setTileText(tileLabel);
+        disableTile(tiles[positionY][positionX], false);
+    }
+    
+    public void flagTile(int positionY, int positionX, String tileLabel) {
+        var tile = tiles[positionY][positionX];
+        tile.setTileText(tile.getTileText().equalsIgnoreCase("f") ? "" : tileLabel);
+        disableTile(tile, true);
+    }
+    
+    public void updatePlayerScore(String time) {
+        playerScoreLabel.setText(time);
     }
     
     /**
@@ -150,6 +160,7 @@ public class ApplicationView extends javax.swing.JFrame {
      * @param mouseListener - Mouse event listener to add to each tile.
      */
     public void initialiseSquareTileGrid(int height, int width, MouseListener mouseListener) {
+        resetPlayerScore();
         minefieldPanel.removeAll();
         minefieldPanel.setPreferredSize(new Dimension(700, 700));
         minefieldPanel.setLayout(new GridLayout(height, width, 1, 1));
@@ -158,7 +169,7 @@ public class ApplicationView extends javax.swing.JFrame {
         int tileHeight = (minefieldPanel.getHeight() / height) - 1;
         for (int yPosition = 0; yPosition < height; yPosition++) {
             for (int xPosition = 0; xPosition < width; xPosition++) {
-                UITile tile = new UISquareTile(new Point(yPosition, xPosition), tileWidth, tileHeight);
+                UITile tile = new UISquareTile(new Point(xPosition, yPosition), tileWidth, tileHeight);
                 tile.addMouseListener(mouseListener);
                 tile.setPreferredSize(new Dimension(tileWidth, tileHeight));
                 tiles[yPosition][xPosition] = tile;
@@ -176,6 +187,7 @@ public class ApplicationView extends javax.swing.JFrame {
      * @param mouseListener - Mouse event listener to add to each tile.
      */
     public void initialiseHexagonalTileGrid(int height, int width, MouseListener mouseListener) {
+        resetPlayerScore();
         minefieldPanel.removeAll();
         minefieldPanel.setLayout(null);
         minefieldPanel.setPreferredSize(new Dimension(800, 800));
@@ -192,7 +204,7 @@ public class ApplicationView extends javax.swing.JFrame {
                 if (yPosition % 2 == 1) {
                     x = (int) ((xOff) * (xPosition * 2 + 1) + xOff);
                 }
-                var tile = new UIHexagonalTile(new Point(yPosition, xPosition), new Point((tileWidth * xPosition) / 2, (tileHeight * yPosition) / 2), tileWidth, tileHeight);
+                var tile = new UIHexagonalTile(new Point(xPosition, yPosition), new Point((tileWidth * xPosition) / 2, (tileHeight * yPosition) / 2), tileWidth, tileHeight);
                 tile.setBounds(y, x, tileWidth, tileHeight);
                 tile.addMouseListener(mouseListener);
                 tile.setLocation(x - (int)xOff, y - (int)yOff - (int) yOff);
@@ -203,6 +215,10 @@ public class ApplicationView extends javax.swing.JFrame {
         minefieldPanel.revalidate();
         minefieldPanel.repaint();
     }    
+    
+    private void resetPlayerScore() {
+        playerScoreLabel.setText("0");
+    }
     
     /**
      * Provides additional x offset values based on the width of the minefield.
@@ -248,9 +264,14 @@ public class ApplicationView extends javax.swing.JFrame {
      * Disables a single given tile in the minefield.
      * @param tile - The tile to disable.
      */
-    public void disableTile(UITile tile) {
-        tile.setEnabled(false);
-        tile.setBackgroundColor(TileColor.CLICKED);
+    public void disableTile(UITile tile, boolean flag) {
+        if (flag) {
+            tile.setBackgroundColor(TileColor.NORMAL);
+        } else {
+            tile.setEnabled(false);
+            tile.setBackgroundColor(TileColor.CLICKED);
+        }
+        System.out.println(tile.isEnabled());
         tile.repaint();
     }
    
@@ -266,7 +287,7 @@ public class ApplicationView extends javax.swing.JFrame {
         applicationPanel = new javax.swing.JPanel();
         titleBarPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        playerScoreLabel = new javax.swing.JLabel();
         gameSettingsMenuButton = new javax.swing.JButton();
         restartGameButton = new javax.swing.JButton();
         gameAreaContainer = new javax.swing.JPanel();
@@ -306,11 +327,11 @@ public class ApplicationView extends javax.swing.JFrame {
         titleBarPanel.add(jLabel2);
         jLabel2.setBounds(385, 20, 90, 30);
 
-        jLabel4.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("0");
-        titleBarPanel.add(jLabel4);
-        jLabel4.setBounds(475, 20, 20, 30);
+        playerScoreLabel.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
+        playerScoreLabel.setForeground(new java.awt.Color(255, 255, 255));
+        playerScoreLabel.setText("0");
+        titleBarPanel.add(playerScoreLabel);
+        playerScoreLabel.setBounds(475, 20, 50, 30);
 
         gameSettingsMenuButton.setText("Settings");
         titleBarPanel.add(gameSettingsMenuButton);
@@ -330,7 +351,7 @@ public class ApplicationView extends javax.swing.JFrame {
         minefieldPanel.setBackground(new java.awt.Color(51, 51, 51));
         minefieldPanel.setPreferredSize(new java.awt.Dimension(700, 700));
         minefieldPanel.setLayout(new java.awt.GridBagLayout());
-        gameAreaContainer.add(minefieldPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        gameAreaContainer.add(minefieldPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 10, -1, -1));
 
         gameSettingsPanel.setBackground(new java.awt.Color(51, 51, 51));
         gameSettingsPanel.setPreferredSize(new java.awt.Dimension(450, 250));
@@ -452,10 +473,10 @@ public class ApplicationView extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel minefieldPanel;
+    private javax.swing.JLabel playerScoreLabel;
     private javax.swing.JButton restartGameButton;
     private javax.swing.JPanel titleBarPanel;
     // End of variables declaration//GEN-END:variables

@@ -6,6 +6,7 @@
 package Minesweeper;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -17,5 +18,38 @@ import static org.junit.Assert.*;
 public class TileTest {
     
     public TileTest() {
+    }
+    
+    @Test
+    public void whenATileIsSetToAMineThenItsLabelIsSetToM() {
+        var tile = TileFactory.makeTile(0, 0);
+        tile.setToMine();
+        
+        Assert.assertEquals("M", tile.getLabel());
+    }
+    
+    @Test
+    public void whenATilesAdjacentMineCountIsIncrementedForTheFirstTimeThenOneIsReturned() {
+        var tile = TileFactory.makeTile(0, 0);
+        tile.incrementAdjacentMineCount();
+        
+        Assert.assertEquals("1", tile.getLabel());
+    }
+    
+    @Test
+    public void whenATilesAdjacentMineCountIsIncrementedThenItsLabelIsIncrementedByOne() {
+        var tile = TileFactory.makeTile(0, 0);
+        tile.incrementAdjacentMineCount();
+        tile.incrementAdjacentMineCount();
+        
+        Assert.assertEquals("2", tile.getLabel());
+    }
+    
+    @Test
+    public void whenATileIsDisabledThenItIsNotAvailable() {
+        var tile = TileFactory.makeTile(0, 0);
+        tile.disableTile();
+        
+        Assert.assertFalse(tile.isAvailable());
     }
 }

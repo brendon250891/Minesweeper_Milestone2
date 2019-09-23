@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Timer;
 import javax.swing.JOptionPane;
 
 /**
@@ -60,6 +61,24 @@ public class Controller implements Callback {
     }
     
     /**
+     * Updates the view to flag the tile.
+     * @param tile - The tile to flag.
+     */
+    @Override
+    public void flagTile(ITile tile) {
+        view.flagTile(tile.getPositionY(), tile.getPositionX(), "F");
+    }
+    
+    /**
+     * Updates the timer with the time given.
+     * @param time - The time to set the timer too.
+     */
+    @Override
+    public void updateTimer(String time) {
+        view.updatePlayerScore(time);
+    }
+    
+    /**
      * Prompts the user with a message.
      * @param message - The message to display.
      */
@@ -104,6 +123,7 @@ public class Controller implements Callback {
      */
     private void setupRestartButton() {
         view.addRestartGameButtonEventHandler((ActionEvent e) -> {
+            currentGame.stopTimer();
             setupGame();
         });
     }
@@ -114,7 +134,7 @@ public class Controller implements Callback {
     private void saveGameSettings() {
         setGameType(view.getSelectedGameType());
         setGameDifficulty(view.getSelectedGameDifficulty());
-        
+        currentGame.stopTimer();
         setupGame();
     }
     
@@ -160,10 +180,10 @@ public class Controller implements Callback {
         switch (gameType) {
             case HEXAGONAL:
                 var gameMode = getSelectedGameMode(view.getSelectedGameMode());
-                currentGame = new HexagonalMinesweeper(new Minefield(gameDifficulty), this, gameMode);
+                currentGame = new HexagonalMinesweeper(new Minefield(gameDifficulty), this, new Timer(), gameMode);
                 break;
             default:
-                currentGame = new Minesweeper(new Minefield(gameDifficulty), this);                
+                currentGame = new Minesweeper(new Minefield(gameDifficulty), this, new Timer());                
                 break;
         }
         setupView();
@@ -201,9 +221,9 @@ public class Controller implements Callback {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getSource() instanceof UITile && e.getButton() == 1 && ((UITile)e.getSource()).isEnabled()) {
-                    minefieldTileRightClicked((UITile)e.getSource());
-                } else {
                     minefieldTileLeftClicked((UITile)e.getSource());
+                } else {
+                    minefieldTileRightClicked((UITile)e.getSource());
                 }
             }
 
@@ -226,7 +246,7 @@ public class Controller implements Callback {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (e.getSource() instanceof UITile) {
+                if (e.getSource() instanceof UITile && ((UITile)e.getSource()).isEnabled()) {
                     view.minefieldTileWasExited((UITile)e.getSource());
                 }
             }
@@ -250,14 +270,14 @@ public class Controller implements Callback {
      * @param tile 
      */
     private void minefieldTileRightClicked(UITile tile) {
-        try {
-            currentGame.selectTile(tile.getPositionX(), tile.getPositionY());
-        } catch (Exception e) {
-            promptUser(e.getMessage());
-        }
+        currentGame.flagTile(tile.getPositionY(), tile.getPositionX());
     }
     
     private void minefieldTileLeftClicked(UITile tile) {
-        //currentGame.flagSelectedTile(tile.getPositionY(), tile.getPositionX());
+        try {
+            currentGame.selectTile(tile.getPositionY(), tile.getPositionX());
+        } catch (Exception e) {
+            promptUser(e.getMessage());
+        }
     }
 }

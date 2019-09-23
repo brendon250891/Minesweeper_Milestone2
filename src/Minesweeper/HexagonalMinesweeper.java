@@ -6,6 +6,7 @@
 package Minesweeper;
 
 import java.util.Random;
+import java.util.Timer;
 
 /**
  *
@@ -24,8 +25,8 @@ public class HexagonalMinesweeper extends Minesweeper {
      * @param delegate - The delegate of the minesweeper class.
      * @param gameMode - The game mode to set.
      */
-    public HexagonalMinesweeper(IMinefield minefield, Callback delegate, GameMode gameMode) {
-        super(minefield, delegate);
+    public HexagonalMinesweeper(IMinefield minefield, Callback delegate, Timer timer, GameMode gameMode) {
+        super(minefield, delegate, timer);
         this.gameMode = gameMode;
     }
     
@@ -39,7 +40,7 @@ public class HexagonalMinesweeper extends Minesweeper {
         try {
             if (gameMode == GameMode.CORNER_TO_CORNER && checkTileIsAdjacentToRevealedTile(minefield.getTile(yPosition, xPosition))) {
                 super.selectTile(yPosition, xPosition);
-            } else {
+            } else if (gameMode == GameMode.NORMAL || firstSelection) {
                 super.selectTile(yPosition, xPosition);
             }
         } catch (Exception e) {
@@ -58,7 +59,7 @@ public class HexagonalMinesweeper extends Minesweeper {
         for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
             for (int xPosition = tile.getPositionX() - 1; xPosition <= tile.getPositionX() + 1; xPosition++) {
                 if(yPosition >= 0 && yPosition < minefield.getHeight() && xPosition >= 0 && xPosition < minefield.getWidth()) {
-                    var isOddRow = tile.getPositionX() % 2 == 1;
+                    var isOddRow = tile.getPositionY() % 2 == 1;
                     if (isOddRow && yPosition == tile.getPositionY() - 1 && xPosition == tile.getPositionX() - 1) {}
                     else if (isOddRow && yPosition == tile.getPositionY() + 1 && xPosition == tile.getPositionX() - 1) {}
                     else if (!isOddRow && yPosition == tile.getPositionY() + 1 && xPosition == tile.getPositionX() + 1) {}
@@ -92,9 +93,10 @@ public class HexagonalMinesweeper extends Minesweeper {
         Random random = new Random();
         int mineTilesSet = 0;
         while (mineTilesSet < minefield.getMineCount()) {
-            var randomX = random.nextInt(minefield.getHeight() - 1);
-            var randomY = random.nextInt(minefield.getWidth() - 1);
-            if ((randomX != 0 && randomY != 0) || (randomX != minefield.getHeight() - 1 && randomY != minefield.getWidth() - 1)) {
+            var randomY = random.nextInt(minefield.getHeight() - 1);
+            var randomX = random.nextInt(minefield.getWidth() - 1);
+            if ((randomX == 0 && randomY == 0) || (randomX == minefield.getHeight() - 1 && randomY == minefield.getWidth() - 1)) {}
+            else {
                 var tile = minefield.getTile(randomY, randomX);
                 if (!tile.isAMine()) {
                     tile.setToMine();

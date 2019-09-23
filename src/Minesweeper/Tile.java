@@ -114,6 +114,7 @@ public class Tile implements ITile {
     /**
      * Flags the tile.
      */
+    @Override
     public void flagTile() {
         isFlagged = !isFlagged;
     }
