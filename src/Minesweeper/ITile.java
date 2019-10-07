@@ -5,6 +5,8 @@
  */
 package Minesweeper;
 
+import java.awt.Point;
+
 /**
  * Interface that exposes methods of classes that implement this interface.
  * @author brendon
@@ -14,10 +16,12 @@ public interface ITile {
     void incrementAdjacentMineCount();
     void disableTile();
     void flagTile();
+    void setTileLabel(String color);
     String getLabel();
     boolean isAMine();
     boolean isFlagged();
     boolean isAvailable();
     int getPositionX();
     int getPositionY();
+    Point getPosition();
 }

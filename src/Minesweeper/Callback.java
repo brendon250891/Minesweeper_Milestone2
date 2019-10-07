@@ -5,11 +5,15 @@
  */
 package Minesweeper;
 
+import java.awt.Point;
+
 /**
  * Interface that is used as a delegate.
  * @author brendon
  */
 public interface Callback {
+    
+    public void createLinks(Point point, Point[] points);
     /**
      * Tells the controller to update the view by revealing the passed tile.
      * @param tile - The tile to reveal in the minefield of the view.
@@ -26,7 +30,7 @@ public interface Callback {
      * Tells the controller to update the timer in the view.
      * @param time - the time to set the timer too.
      */
-    public void updateTimer(String time);
+    public void updateScore(String time);
     
     /**
      * Prompts the player with a message.

@@ -5,12 +5,23 @@
  */
 package Minesweeper.UI;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.function.Consumer;
+import javax.swing.JPanel;
 
 /**
  *
@@ -21,7 +32,6 @@ public class ApplicationView extends javax.swing.JFrame {
      * Array of UITiles that make up the minefield.
      */
     private UITile[][] tiles;
-    
 
     /**
      * Constructor for the components of the view.
@@ -132,7 +142,7 @@ public class ApplicationView extends javax.swing.JFrame {
     }
     
     public void flagTile(int positionY, int positionX, String tileLabel) {
-        var tile = tiles[positionY][positionX];
+        UITile tile = tiles[positionY][positionX];
         tile.setTileText(tile.getTileText().equalsIgnoreCase("f") ? "" : tileLabel);
         disableTile(tile, true);
     }
@@ -150,6 +160,19 @@ public class ApplicationView extends javax.swing.JFrame {
             for (UITile tile : tileArrayOne) {
                tile.setEnabled(isInteractive);
             }
+        }
+    }
+    
+    public void initialiseMinefieldView(String gameType, int width, int height, MouseListener listener) {
+        switch(gameType) {
+            case "HEXAGONAL":
+                initialiseHexagonalTileGrid(width, height, listener);
+                break;
+            case "COLORING_PROBLEM":
+                initialiseColoringProblemTileGrid(width, height, listener);
+                break;
+            default:
+                initialiseSquareTileGrid(width, height, listener);
         }
     }
     
@@ -204,7 +227,7 @@ public class ApplicationView extends javax.swing.JFrame {
                 if (yPosition % 2 == 1) {
                     x = (int) ((xOff) * (xPosition * 2 + 1) + xOff);
                 }
-                var tile = new UIHexagonalTile(new Point(xPosition, yPosition), new Point((tileWidth * xPosition) / 2, (tileHeight * yPosition) / 2), tileWidth, tileHeight);
+                UIHexagonalTile tile = new UIHexagonalTile(new Point(xPosition, yPosition), new Point((tileWidth * xPosition) / 2, (tileHeight * yPosition) / 2), tileWidth, tileHeight);
                 tile.setBounds(y, x, tileWidth, tileHeight);
                 tile.addMouseListener(mouseListener);
                 tile.setLocation(x - (int)xOff, y - (int)yOff - (int) yOff);
@@ -215,6 +238,72 @@ public class ApplicationView extends javax.swing.JFrame {
         minefieldPanel.revalidate();
         minefieldPanel.repaint();
     }    
+    
+    
+    public void initialiseColoringProblemTileGrid(int width, int height, MouseListener listener) {
+        resetPlayerScore();
+        minefieldPanel.removeAll();
+        minefieldPanel.setPreferredSize(new Dimension(800, 800));
+        minefieldPanel.setLayout(null);
+        tiles = new UIColorTile[height][width];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                UIColorTile tile = new UIColorTile(new Point(j, i), 100, 100);
+                tile.setPreferredSize(new Dimension(100, 100));
+                tile.setBounds(j * 266, i * 266, 100, 100);
+                tile.setCenterPoint();
+                tile.addMouseListener(listener);
+                tiles[i][j] = tile;
+                minefieldPanel.add(tile);
+            }
+        }
+        minefieldPanel.revalidate();
+        minefieldPanel.repaint();
+    }
+   
+    
+    public void linkTiles(Point key, Point[] values) {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] != null) {
+                drawLine((UIColorTile)tiles[key.x][key.y], (UIColorTile)tiles[values[i].x][values[i].y]);
+            }
+        }
+    }
+    
+    private void drawLine(UIColorTile firstTile, UIColorTile secondTile) {
+        Line line = new Line(firstTile.getCenterPoint(), secondTile.getCenterPoint());
+        minefieldPanel.add(line);
+    }
+    
+    
+//    private HashMap<UIColorTile, UIColorTile[]> createTestNeighbors(UIColorTile[][] testTiles) {
+//        HashMap<UIColorTile, UIColorTile[]> testMap = new HashMap<>();
+//        Random random = new Random();
+//        for(UIColorTile[] tiles : testTiles) {
+//            for (UIColorTile tile : tiles) {
+//                UIColorTile[] connections = new UIColorTile[3];
+//                int added = 0;
+//                while(added < connections.length) {
+//                    int randomX = random.nextInt(3);
+//                    int randomY = random.nextInt(3);
+//                    if (tile.getPositionX() != randomX && tile.getPositionY() != randomY) {
+//                        connections[added] = testTiles[randomX][randomY];
+//                        System.out.println(String.format("Tile Position: %s\nconnections: %s", tile.getCenterPoint(), Arrays.toString(connections)));
+//                        added++;
+//                    }
+//                }
+//                testMap.put(tile, connections);
+//            }
+//        }
+//        return testMap;
+//    }
+            
+            
+    private void createLinks(Point[] neighborhoods) {
+        for(var point : neighborhoods) {
+            
+        }
+    }
     
     private void resetPlayerScore() {
         playerScoreLabel.setText("0");
@@ -269,10 +358,24 @@ public class ApplicationView extends javax.swing.JFrame {
             tile.setBackgroundColor(TileColor.NORMAL);
         } else {
             tile.setEnabled(false);
-            tile.setBackgroundColor(TileColor.CLICKED);
-        }
-        System.out.println(tile.isEnabled());
+            if(tile.getTileText().length() > 1) {
+                tile.setBackgroundColor(getTileColor(tile.getTileText()));
+            } else {
+                tile.setBackgroundColor(TileColor.CLICKED);
+            }
+        }      
         tile.repaint();
+    }
+    
+    private String getTileColor(String color) {
+        switch (color.toLowerCase()) {
+            case "red":
+                return "255,0,0";
+            case "green":
+                return "0,255,0";
+            default:
+                return "0,0,255";
+        }
     }
    
     /**
@@ -304,6 +407,7 @@ public class ApplicationView extends javax.swing.JFrame {
         gameModeComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Minesweeper Application");
         setBounds(new java.awt.Rectangle(0, 23, 900, 820));
         setMaximumSize(new java.awt.Dimension(900, 820));
         setMinimumSize(new java.awt.Dimension(900, 820));
@@ -363,7 +467,7 @@ public class ApplicationView extends javax.swing.JFrame {
         difficultyComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Beginner", "Intermediate", "Expert" }));
         difficultyComboBox.setPreferredSize(new java.awt.Dimension(135, 30));
 
-        gameTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Regular", "Hexagonal", "Colouring Problem" }));
+        gameTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Regular", "Hexagonal", "Coloring Problem" }));
         gameTypeComboBox.setPreferredSize(new java.awt.Dimension(173, 30));
 
         jLabel3.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N

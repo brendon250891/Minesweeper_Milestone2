@@ -136,4 +136,12 @@ public class Tile implements ITile {
     public boolean isAvailable() {
         return isAvailable;
     }
+    
+    public Point getPosition() {
+        return position;
+    }
+    
+    public void setTileLabel(String color) {
+        tileLabel = color;
+    }
 }

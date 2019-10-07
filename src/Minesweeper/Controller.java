@@ -7,6 +7,7 @@ package Minesweeper;
 
 import Minesweeper.UI.ApplicationView;
 import Minesweeper.UI.UITile;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
@@ -51,6 +52,11 @@ public class Controller implements Callback {
         displayView();
     }
     
+    @Override
+    public void createLinks(Point point, Point[] points) {
+        view.linkTiles(point, points);
+    }
+    
     /**
      * Updates the view to reveal a tile.
      * @param tile - The tile to reveal.
@@ -74,7 +80,7 @@ public class Controller implements Callback {
      * @param time - The time to set the timer too.
      */
     @Override
-    public void updateTimer(String time) {
+    public void updateScore(String time) {
         view.updatePlayerScore(time);
     }
     
@@ -84,7 +90,8 @@ public class Controller implements Callback {
      */
     @Override
     public void promptUser(String message) {
-        var selection = JOptionPane.showConfirmDialog(null, message, "Game Over", JOptionPane.YES_NO_OPTION);
+        currentGame.stopTimer();
+        int selection = JOptionPane.showConfirmDialog(null, message, "Game Over", JOptionPane.YES_NO_OPTION);
         if (selection == 0) {
             setupGame();
         } else {
@@ -110,7 +117,7 @@ public class Controller implements Callback {
         });
         
         view.addGameTypeComboBoxChangedEvent((ItemEvent e) -> {
-            var gameModeEnabled = false;
+            boolean gameModeEnabled = false;
             if (e.getItem().toString().equalsIgnoreCase("hexagonal")) {
                 gameModeEnabled = true;
             }
@@ -177,16 +184,29 @@ public class Controller implements Callback {
      * Does any initial model setup that is required such as minefield setup.
      */
     private void setupGame() {
+        setTileEventHandlers();    
         switch (gameType) {
             case HEXAGONAL:
-                var gameMode = getSelectedGameMode(view.getSelectedGameMode());
+                GameMode gameMode = getSelectedGameMode(view.getSelectedGameMode());
                 currentGame = new HexagonalMinesweeper(new Minefield(gameDifficulty), this, new Timer(), gameMode);
+                break;
+            case COLORING_PROBLEM:
+                gameDifficulty = GameDifficulty.COLOR;
+                currentGame = new ColoringProblemMinesweeper(new Minefield(gameDifficulty), this, new Timer());     
                 break;
             default:
                 currentGame = new Minesweeper(new Minefield(gameDifficulty), this, new Timer());                
                 break;
         }
-        setupView();
+        currentGame.startGame();
+        if (getSelectedGameMode(view.getSelectedGameMode()) == GameMode.CORNER_TO_CORNER) {
+            try {
+                currentGame.selectTile(0, 0);
+            } catch (Exception e) {
+                promptUser(e.getMessage());
+            }
+        }
+       //setTileEventHandlers();
     }
     
     /**
@@ -197,14 +217,7 @@ public class Controller implements Callback {
     private GameMode getSelectedGameMode(String gameMode) {
         return gameMode.equalsIgnoreCase("normal") ? GameMode.NORMAL : GameMode.CORNER_TO_CORNER;
     }
-    
-    /**
-     * Does any initial view setup that is required such as setting event handlers.
-     */
-    private void setupView() {
-        setupViewMinefieldEventHandlers();
-    }
-    
+   
     /**
      * Displays the view to the user.
      */
@@ -216,7 +229,7 @@ public class Controller implements Callback {
     /**
      * Adds mouse click event handlers to the tiles displayed in the minefield.
      */
-    private void setupViewMinefieldEventHandlers() {
+    private void setTileEventHandlers() {
         MouseListener clickEvents = new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -250,18 +263,20 @@ public class Controller implements Callback {
                     view.minefieldTileWasExited((UITile)e.getSource());
                 }
             }
-        };        
-        if (gameType == GameType.MINESWEEPER) {
-            view.initialiseSquareTileGrid(gameDifficulty.height(), gameDifficulty.width(), clickEvents);
-        } else {
-            view.initialiseHexagonalTileGrid(gameDifficulty.height(), gameDifficulty.width(), clickEvents);
-            if (getSelectedGameMode(view.getSelectedGameMode()) == GameMode.CORNER_TO_CORNER) {
-                try {
-                    currentGame.selectTile(0, 0);
-                } catch (Exception e) {
-                    promptUser(e.getMessage());
-                }
-            }
+        };
+        initialiseMinefield(clickEvents);
+    }
+    
+    private void initialiseMinefield(MouseListener clickEvents) {
+        switch (gameType.toString().toLowerCase()) {
+            case "hexagonal":
+                view.initialiseHexagonalTileGrid(gameDifficulty.height(), gameDifficulty.width(), clickEvents);
+                break;
+            case "coloring_problem":
+                view.initialiseColoringProblemTileGrid(gameDifficulty.height(), gameDifficulty.width(), clickEvents);
+                break;
+            default:
+                view.initialiseSquareTileGrid(gameDifficulty.height(), gameDifficulty.width(), clickEvents);
         }
     }
     

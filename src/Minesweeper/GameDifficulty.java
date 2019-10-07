@@ -10,6 +10,7 @@ package Minesweeper;
  * @author brendon
  */
 public enum GameDifficulty {
+    COLOR(3, 3, 1),
     BEGINNER(9, 9, 10),
     INTERMEDIATE(16, 16, 40),
     EXPERT(16, 30, 99);

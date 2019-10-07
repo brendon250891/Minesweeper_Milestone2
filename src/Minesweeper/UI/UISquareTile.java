@@ -26,7 +26,7 @@ public class UISquareTile extends UITile {
         g.drawRect(0, 0, getTileWidth(), getTileHeight());
         g.setColor(getBackgroundColor());
         g.fillRect(0, 0, getTileWidth(), getTileHeight());
-        g.setColor(getForegroundColor(getTileText()));
+        g.setColor(getTileText().length() > 1 ? getBackgroundColor() : getForegroundColor(getTileText()));
         g.setFont(new java.awt.Font("plain", 0, 24));
         g.drawString(getTileText(), (getTileWidth() / 2) - 8, (getTileHeight() / 2) + 5);
     }

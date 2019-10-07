@@ -13,7 +13,7 @@ import java.util.TimerTask;
  * Class that handles the logic for a normal game of minesweeper
  * @author brendon
  */
-public class Minesweeper extends TimerTask implements IMinesweeper {
+public class Minesweeper implements IMinesweeper {
     /**
      * The minefield that the minesweeper game uses.
      */
@@ -29,7 +29,7 @@ public class Minesweeper extends TimerTask implements IMinesweeper {
     /**
      * The delegate for the minesweeper class.
      */
-    public Callback delegate;
+    protected Callback delegate;
     
     /**
      * Constructor
@@ -40,6 +40,10 @@ public class Minesweeper extends TimerTask implements IMinesweeper {
         this.minefield = minefield;
         this.delegate = delegate;
         this.timer = timer;
+    }
+    
+    @Override
+    public void startGame() {
         randomlySelectMineTiles();
     }
     
@@ -55,7 +59,7 @@ public class Minesweeper extends TimerTask implements IMinesweeper {
             firstSelection = false;
             startTimer();
         }
-        var tile = minefield.getTile(yPosition, xPosition);
+        ITile tile = minefield.getTile(yPosition, xPosition);
         if (!tile.isFlagged()) {
             if (tile.isAvailable() && tile.isAMine()) {
                 delegate.revealTile(tile);
@@ -69,7 +73,7 @@ public class Minesweeper extends TimerTask implements IMinesweeper {
     
     @Override
     public void flagTile(int yPosition, int xPosition) {
-        var tile = minefield.getTile(yPosition, xPosition);
+        ITile tile = minefield.getTile(yPosition, xPosition);
         if (tile.isAvailable()) {
             tile.flagTile();
             delegate.flagTile(tile);    
@@ -112,7 +116,7 @@ public class Minesweeper extends TimerTask implements IMinesweeper {
         while (minesAdded < minefield.getMineCount()) {
             int randomXPosition = rnd.nextInt(minefield.getWidth() - 1);
             int randomYPosition = rnd.nextInt(minefield.getHeight() - 1);
-            var tile = minefield.getTile(randomYPosition, randomXPosition);
+            ITile tile = minefield.getTile(randomYPosition, randomXPosition);
             if (!tile.isAMine()) {
                 minesAdded++;
                 tile.setToMine();
@@ -139,7 +143,7 @@ public class Minesweeper extends TimerTask implements IMinesweeper {
         int tileCount = 0;
         for(int yPosition = 0; yPosition < minefield.getHeight(); yPosition++) {
             for (int xPosition = 0; xPosition < minefield.getWidth(); xPosition++) {
-                var tile = minefield.getTile(yPosition, xPosition);
+                ITile tile = minefield.getTile(yPosition, xPosition);
                 if (tile.isAvailable()) {
                     tileCount++;
                 }
@@ -151,7 +155,7 @@ public class Minesweeper extends TimerTask implements IMinesweeper {
         }
     }
     
-    private void startTimer() {
+    protected void startTimer() {
         new Thread(new Runnable() {
             int time = 0;
             
@@ -161,15 +165,10 @@ public class Minesweeper extends TimerTask implements IMinesweeper {
                     @Override
                     public void run() {
                         time++;
-                        delegate.updateTimer(String.format("%s", time));
+                        delegate.updateScore(String.format("%s", time));
                     }
                 }, 0, 1000);
             }
         }).start();
-    }
-
-    @Override
-    public void run() {
-        
     }
 }

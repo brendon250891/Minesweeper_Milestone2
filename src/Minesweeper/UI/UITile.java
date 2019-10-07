@@ -6,6 +6,7 @@
 package Minesweeper.UI;
 
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import javax.swing.JComponent;
@@ -69,6 +70,10 @@ public class UITile extends JComponent {
     
     public void setBackgroundColor(TileColor color) {
         this.backgroundColor = color.getColor();
+    }
+    
+    public void setBackgroundColor(String color) {
+        this.backgroundColor = color;
     }
     
     public java.awt.Color getBackgroundColor() {

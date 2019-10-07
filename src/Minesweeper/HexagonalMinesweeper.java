@@ -55,11 +55,11 @@ public class HexagonalMinesweeper extends Minesweeper {
      * @return true if the tile is valid, false otherwise.
      */
     private boolean checkTileIsAdjacentToRevealedTile(ITile tile) {
-        var availableCount = 0;
+        int availableCount = 0;
         for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
             for (int xPosition = tile.getPositionX() - 1; xPosition <= tile.getPositionX() + 1; xPosition++) {
                 if(yPosition >= 0 && yPosition < minefield.getHeight() && xPosition >= 0 && xPosition < minefield.getWidth()) {
-                    var isOddRow = tile.getPositionY() % 2 == 1;
+                    boolean isOddRow = tile.getPositionY() % 2 == 1;
                     if (isOddRow && yPosition == tile.getPositionY() - 1 && xPosition == tile.getPositionX() - 1) {}
                     else if (isOddRow && yPosition == tile.getPositionY() + 1 && xPosition == tile.getPositionX() - 1) {}
                     else if (!isOddRow && yPosition == tile.getPositionY() + 1 && xPosition == tile.getPositionX() + 1) {}
@@ -93,11 +93,11 @@ public class HexagonalMinesweeper extends Minesweeper {
         Random random = new Random();
         int mineTilesSet = 0;
         while (mineTilesSet < minefield.getMineCount()) {
-            var randomY = random.nextInt(minefield.getHeight() - 1);
-            var randomX = random.nextInt(minefield.getWidth() - 1);
+            int randomY = random.nextInt(minefield.getHeight() - 1);
+            int randomX = random.nextInt(minefield.getWidth() - 1);
             if ((randomX == 0 && randomY == 0) || (randomX == minefield.getHeight() - 1 && randomY == minefield.getWidth() - 1)) {}
             else {
-                var tile = minefield.getTile(randomY, randomX);
+                ITile tile = minefield.getTile(randomY, randomX);
                 if (!tile.isAMine()) {
                     tile.setToMine();
                     incrementAdjacentMineCount(tile);
@@ -117,7 +117,7 @@ public class HexagonalMinesweeper extends Minesweeper {
         for (int yPosition = tile.getPositionY() - 1; yPosition <= tile.getPositionY() + 1; yPosition++) {
             for (int xPosition = tile.getPositionX() - 1; xPosition <= tile.getPositionX() + 1; xPosition++) {
                 if(yPosition >= 0 && yPosition < minefield.getHeight() && xPosition >= 0 && xPosition < minefield.getWidth()) {
-                    var isOddRow = tile.getPositionY() % 2 == 1;
+                    boolean isOddRow = tile.getPositionY() % 2 == 1;
                     if (isOddRow && yPosition == tile.getPositionY() - 1 && xPosition == tile.getPositionX() - 1) {}
                     else if (isOddRow && yPosition == tile.getPositionY() + 1 && xPosition == tile.getPositionX() - 1) {}
                     else if (!isOddRow && yPosition == tile.getPositionY() + 1 && xPosition == tile.getPositionX() + 1) {}
@@ -128,5 +128,18 @@ public class HexagonalMinesweeper extends Minesweeper {
                 }
             }
         } 
+    }
+    
+    @Override
+    public void checkForWin() {
+        if (gameMode == GameMode.NORMAL) {
+            super.checkForWin();
+        } else {
+            ITile tile = minefield.getTile(minefield.getHeight() - 1, minefield.getWidth() - 1);
+            if (!tile.isAvailable()) {
+                stopTimer();
+                delegate.promptUser("Congratulations! You Have Won!");
+            }
+        }
     }
 }

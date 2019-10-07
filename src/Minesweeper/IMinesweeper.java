@@ -10,6 +10,7 @@ package Minesweeper;
  * @author brendon
  */
 public interface IMinesweeper {
+    void startGame();
     void selectTile(int yPosition, int xPosition) throws Exception;
     void flagTile(int yPosition, int xPosition);
     void stopTimer();
