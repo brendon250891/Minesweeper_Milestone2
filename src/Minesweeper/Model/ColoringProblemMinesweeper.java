@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Minesweeper;
+package Minesweeper.Model;
 
+import Minesweeper.Controllers.Callback;
 import java.awt.Point;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Random;
 import java.util.Timer;

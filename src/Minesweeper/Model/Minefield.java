@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Minesweeper;
+package Minesweeper.Model;
 
 /**
  * Class responsible for storing and retrieving tiles for a game of minesweeper.

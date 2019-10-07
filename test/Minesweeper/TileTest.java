@@ -5,6 +5,7 @@
  */
 package Minesweeper;
 
+import Minesweeper.Model.TileFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Minesweeper;
+package Minesweeper.Model;
 
 /**
  * Enum containing all the information related to a minesweeper games difficulty.

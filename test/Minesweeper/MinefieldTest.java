@@ -5,6 +5,8 @@
  */
 package Minesweeper;
 
+import Minesweeper.Model.GameDifficulty;
+import Minesweeper.Model.Minefield;
 import java.util.Timer;
 import org.junit.Test;
 import org.junit.Assert;

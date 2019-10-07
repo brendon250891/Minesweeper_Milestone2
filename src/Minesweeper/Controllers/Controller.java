@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Minesweeper;
+package Minesweeper.Controllers;
 
-import Minesweeper.UI.ApplicationView;
-import Minesweeper.UI.UITile;
+import Minesweeper.Model.*;
+import Minesweeper.UI.*;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;

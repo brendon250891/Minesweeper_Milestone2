@@ -3,14 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Minesweeper;
+package Minesweeper.Model;
 
 /**
- * Enum used to determine the game type.
+ * Enum used to determine the game mode.
  * @author brendon
  */
-public enum GameType {
-    MINESWEEPER,
-    HEXAGONAL,
-    COLORING_PROBLEM;
+public enum GameMode {
+    NORMAL,
+    CORNER_TO_CORNER;
 }
